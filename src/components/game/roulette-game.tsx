@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -35,7 +34,7 @@ export const RouletteGame = () => {
     if (isSpinning || isDartFlying || currentIndex >= participants.length) return;
     
     setIsSpinning(true);
-    const extraSpins = 2 + Math.random() * 1;
+    const extraSpins = 3 + Math.random() * 2;
     const finalRotation = rotation + extraSpins * 360;
     setRotation(finalRotation);
 
@@ -47,8 +46,9 @@ export const RouletteGame = () => {
         setIsDartFlying(false);
         
         const sliceSize = 360 / participants.length;
+        // 룰렛은 시계 반대방향으로 도는 느낌이므로 회전값을 보정하여 당첨 인덱스 계산
         const normalizedRotation = (finalRotation % 360);
-        const hitIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
+        const hitIndex = Math.floor(((360 - (normalizedRotation % 360)) % 360) / sliceSize);
         
         const currentResult: GameResult = {
           participant: participants[currentIndex],
@@ -67,7 +67,23 @@ export const RouletteGame = () => {
           }, 1500);
         }
       }, 800);
-    }, 4000);
+    }, 3500);
+  };
+
+  // SVG 파이 조각 경로 생성 함수
+  const getSlicePath = (index: number, total: number) => {
+    const angle = 360 / total;
+    const startAngle = index * angle;
+    const endAngle = (index + 1) * angle;
+    
+    const x1 = 50 + 50 * Math.cos((Math.PI * (startAngle - 90)) / 180);
+    const y1 = 50 + 50 * Math.sin((Math.PI * (startAngle - 90)) / 180);
+    const x2 = 50 + 50 * Math.cos((Math.PI * (endAngle - 90)) / 180);
+    const y2 = 50 + 50 * Math.sin((Math.PI * (endAngle - 90)) / 180);
+    
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    
+    return `M 50 50 L ${x1} ${y1} A 50 50 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
   };
 
   if (step === 'setup') {
@@ -121,49 +137,78 @@ export const RouletteGame = () => {
       </div>
       
       <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
-        <div className="absolute top-[-30px] left-1/2 -translate-x-1/2 z-30 animate-bounce">
-          <div className="w-8 h-8 rounded-full bg-accent border-4 border-white shadow-lg flex items-center justify-center">
-             <div className="w-2 h-2 rounded-full bg-white" />
-          </div>
+        {/* 상단 화살표 인디케이터 */}
+        <div className="absolute top-[-25px] left-1/2 -translate-x-1/2 z-30">
+          <div className="w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[25px] border-t-accent drop-shadow-md" />
         </div>
         
+        {/* 룰렛 판 */}
         <div 
-          className={cn("w-full h-full rounded-full border-[12px] border-white shadow-2xl overflow-hidden relative transition-transform cubic-bezier(0.2, 0, 0.2, 1)")}
-          style={{ transform: `rotate(${rotation}deg)`, transitionDuration: '4000ms' }}
+          className="w-full h-full rounded-full border-[10px] border-white shadow-2xl overflow-hidden relative transition-transform"
+          style={{ transform: `rotate(${rotation}deg)`, transitionDuration: '3500ms', transitionTimingFunction: 'cubic-bezier(0.15, 0, 0.15, 1)' }}
         >
-          {participants.map((p, i) => {
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            {participants.map((_, i) => (
+              <path
+                key={i}
+                d={getSlicePath(i, participants.length)}
+                fill={i % 2 === 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))'}
+                className="transition-colors duration-500"
+              />
+            ))}
+          </svg>
+          
+          {/* 금액 텍스트 레이블 */}
+          {participants.map((_, i) => {
             const angle = 360 / participants.length;
-            const rotate = i * angle;
+            const textAngle = i * angle + angle / 2;
             return (
-              <div key={i} className="absolute w-full h-full origin-center" style={{ transform: `rotate(${rotate}deg)`, clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.tan((angle * Math.PI) / 360)}% 0%)`, backgroundColor: i % 2 === 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
-                <div className="absolute left-1/2 top-10 -translate-x-1/2 flex flex-col items-center gap-1" style={{ transform: `rotate(${angle / 2}deg)` }}>
-                  <div className="text-[10px] font-black text-white px-2 py-1 bg-black/20 rounded-md">{amounts[i]}</div>
+              <div 
+                key={i} 
+                className="absolute inset-0 flex items-start justify-center pt-8 pointer-events-none"
+                style={{ transform: `rotate(${textAngle}deg)` }}
+              >
+                <div className="text-[10px] font-black text-white bg-black/30 px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                  {amounts[i]}
                 </div>
               </div>
             );
           })}
-          <div className="absolute inset-[35%] rounded-full bg-white shadow-inner flex items-center justify-center z-10 border-4 border-primary/10">
-             <Target className="text-primary opacity-20" size={40} />
+
+          {/* 중앙 코어 */}
+          <div className="absolute inset-[38%] rounded-full bg-white shadow-inner flex items-center justify-center z-10 border-4 border-primary/10">
+             <Target className="text-primary opacity-20" size={32} />
           </div>
         </div>
 
-        <div className={cn("absolute bottom-[-100px] transition-all duration-700 ease-out z-40", isDartFlying ? "bottom-[40%] scale-50 rotate-[45deg] opacity-100" : "opacity-0 translate-y-20")}>
+        {/* 날아가는 다트 연출 */}
+        <div className={cn(
+          "absolute bottom-[-120px] transition-all duration-700 ease-out z-40 pointer-events-none", 
+          isDartFlying ? "bottom-[45%] scale-50 rotate-[45deg] opacity-100" : "opacity-0 translate-y-20"
+        )}>
           <div className="relative">
-            <div className="w-2 h-24 bg-zinc-800 rounded-full" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-12 bg-accent clip-path-dart-tail" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-4 bg-zinc-400" />
+            <div className="w-2 h-24 bg-zinc-800 rounded-full shadow-lg" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-12 bg-accent clip-path-dart-tail shadow-md" />
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-6 bg-zinc-400 rounded-b-full" />
           </div>
         </div>
       </div>
 
-      <div className="w-full bg-white/40 p-4 rounded-2xl border-2 border-white">
-        <div className="text-xs font-bold text-muted-foreground mb-2">실시간 다트 현황</div>
-        <div className="flex flex-wrap gap-2">
+      {/* 실시간 대기 현황판 */}
+      <div className="w-full bg-white/40 backdrop-blur-md p-5 rounded-[2rem] border-4 border-white shadow-inner">
+        <div className="text-xs font-black text-secondary mb-3 flex items-center gap-2">
+          <Target size={14} /> 실시간 다트 스코어보드
+        </div>
+        <div className="grid grid-cols-2 gap-2">
            {participants.map(p => {
              const res = results.find(r => r.participant.id === p.id);
              return (
-               <div key={p.id} className={cn("px-2 py-1 rounded-full text-[10px] font-black border transition-all", res ? "bg-secondary/20 border-secondary text-secondary" : "bg-white/50 border-white text-muted-foreground")}>
-                 {p.name}: {res ? res.amount : '대기 중'}
+               <div key={p.id} className={cn(
+                 "px-3 py-2 rounded-xl text-[10px] font-black border transition-all flex justify-between items-center",
+                 res ? "bg-secondary/10 border-secondary/30 text-secondary" : "bg-white/50 border-white text-muted-foreground opacity-60"
+               )}>
+                 <span className="truncate max-w-[60px]">{p.name}</span>
+                 <span>{res ? `${res.amount}` : '대기'}</span>
                </div>
              );
            })}
@@ -173,11 +218,11 @@ export const RouletteGame = () => {
       <div className="w-full space-y-4">
         {currentIndex < participants.length ? (
           <Button onClick={throwDart} disabled={isSpinning || isDartFlying} className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3">
-            {isSpinning ? '회전 중 (눈 크게 뜨고 보세요! 👀)' : isDartFlying ? '발사!' : <><User /> {participants[currentIndex].name}님 다트 던지기!</>}
+            {isSpinning ? '조준 중... (두근두근! 🎯)' : isDartFlying ? '발사 완료!' : <><User /> {participants[currentIndex].name}님 다트 던지기!</>}
           </Button>
         ) : (
-          <div className="text-center py-4 text-secondary font-black animate-pulse flex items-center justify-center gap-2">
-            <CheckCircle2 /> 최고 금액 보스 선별 중...
+          <div className="text-center py-6 text-secondary font-black animate-pulse flex items-center justify-center gap-2 bg-secondary/5 rounded-3xl border-2 border-dashed border-secondary/20">
+            <CheckCircle2 /> 모든 결과가 나왔습니다! 분석 중...
           </div>
         )}
       </div>
