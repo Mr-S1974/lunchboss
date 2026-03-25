@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -12,7 +13,6 @@ export const RouletteGame = () => {
   const [step, setStep] = useState<'setup' | 'playing'>('setup');
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [isDartFlying, setIsDartFlying] = useState(false);
   const [amounts, setAmounts] = useState<string[]>([]);
   
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,47 +30,49 @@ export const RouletteGame = () => {
     return Number(numeric).toLocaleString();
   };
 
-  const throwDart = () => {
-    if (isSpinning || isDartFlying || currentIndex >= participants.length) return;
+  // 인원수의 2배로 칸을 배정
+  const totalSlices = participants.length * 2;
+
+  const spinRoulette = () => {
+    if (isSpinning || currentIndex >= participants.length) return;
     
     setIsSpinning(true);
-    const extraSpins = 3 + Math.random() * 2;
-    const finalRotation = rotation + extraSpins * 360;
-    setRotation(finalRotation);
+    const extraSpins = 5 + Math.random() * 5;
+    const spinAmount = extraSpins * 360;
+    const newRotation = rotation + spinAmount;
+    setRotation(newRotation);
 
     setTimeout(() => {
-      setIsDartFlying(true);
+      setIsSpinning(false);
       
-      setTimeout(() => {
-        setIsSpinning(false);
-        setIsDartFlying(false);
-        
-        const sliceSize = 360 / participants.length;
-        // 룰렛은 시계 반대방향으로 도는 느낌이므로 회전값을 보정하여 당첨 인덱스 계산
-        const normalizedRotation = (finalRotation % 360);
-        const hitIndex = Math.floor(((360 - (normalizedRotation % 360)) % 360) / sliceSize);
-        
-        const currentResult: GameResult = {
-          participant: participants[currentIndex],
-          amount: amounts[hitIndex]
-        };
+      const sliceSize = 360 / totalSlices;
+      // 룰렛 회전 후 상단 화살표(0도)에 위치한 슬라이스 계산
+      // 회전된 각도를 360으로 나눈 나머지를 이용하여 인덱스 역추적
+      const normalizedRotation = newRotation % 360;
+      const hitSliceIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
+      
+      // 금액은 순환 구조 (N개 금액이 2세트 반복)
+      const hitAmountIndex = hitSliceIndex % participants.length;
+      
+      const currentResult: GameResult = {
+        participant: participants[currentIndex],
+        amount: amounts[hitAmountIndex]
+      };
 
-        const updatedResults = [...results, currentResult];
-        setResults(updatedResults);
-        
-        const nextIdx = currentIndex + 1;
-        setCurrentIndex(nextIdx);
+      const updatedResults = [...results, currentResult];
+      setResults(updatedResults);
+      
+      const nextIdx = currentIndex + 1;
+      setCurrentIndex(nextIdx);
 
-        if (nextIdx === participants.length) {
-          setTimeout(() => {
-            setFinalResults(updatedResults);
-          }, 1500);
-        }
-      }, 800);
-    }, 3500);
+      if (nextIdx === participants.length) {
+        setTimeout(() => {
+          setFinalResults(updatedResults);
+        }, 1500);
+      }
+    }, 4000); // 4초 동안 회전
   };
 
-  // SVG 파이 조각 경로 생성 함수
   const getSlicePath = (index: number, total: number) => {
     const angle = 360 / total;
     const startAngle = index * angle;
@@ -131,8 +133,8 @@ export const RouletteGame = () => {
         <h3 className="text-2xl font-black text-secondary italic uppercase tracking-tighter">복불복 룰렛</h3>
         <p className="text-xs font-bold text-muted-foreground">
           {currentIndex < participants.length 
-            ? `${participants[currentIndex].name}님이 다트를 던질 차례입니다!` 
-            : "모든 다트 결과 분석 중..."}
+            ? `${participants[currentIndex].name}님이 룰렛을 돌릴 차례입니다!` 
+            : "모든 결과 분석 중..."}
         </p>
       </div>
       
@@ -144,32 +146,33 @@ export const RouletteGame = () => {
         
         {/* 룰렛 판 */}
         <div 
-          className="w-full h-full rounded-full border-[10px] border-white shadow-2xl overflow-hidden relative transition-transform"
-          style={{ transform: `rotate(${rotation}deg)`, transitionDuration: '3500ms', transitionTimingFunction: 'cubic-bezier(0.15, 0, 0.15, 1)' }}
+          className="w-full h-full rounded-full border-[10px] border-white shadow-2xl overflow-hidden relative"
+          style={{ transform: `rotate(${rotation}deg)`, transition: isSpinning ? 'transform 4s cubic-bezier(0.15, 0, 0.15, 1)' : 'none' }}
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
-            {participants.map((_, i) => (
+            {Array.from({ length: totalSlices }).map((_, i) => (
               <path
                 key={i}
-                d={getSlicePath(i, participants.length)}
+                d={getSlicePath(i, totalSlices)}
                 fill={i % 2 === 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))'}
                 className="transition-colors duration-500"
               />
             ))}
           </svg>
           
-          {/* 금액 텍스트 레이블 */}
-          {participants.map((_, i) => {
-            const angle = 360 / participants.length;
+          {/* 금액 텍스트 레이블 (2배 칸 배정) */}
+          {Array.from({ length: totalSlices }).map((_, i) => {
+            const angle = 360 / totalSlices;
             const textAngle = i * angle + angle / 2;
+            const amountIdx = i % participants.length;
             return (
               <div 
                 key={i} 
-                className="absolute inset-0 flex items-start justify-center pt-8 pointer-events-none"
+                className="absolute inset-0 flex items-start justify-center pt-10 pointer-events-none"
                 style={{ transform: `rotate(${textAngle}deg)` }}
               >
-                <div className="text-[10px] font-black text-white bg-black/30 px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
-                  {amounts[i]}
+                <div className="text-[9px] font-black text-white bg-black/20 px-2 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                  {amounts[amountIdx]}
                 </div>
               </div>
             );
@@ -180,24 +183,11 @@ export const RouletteGame = () => {
              <Target className="text-primary opacity-20" size={32} />
           </div>
         </div>
-
-        {/* 날아가는 다트 연출 */}
-        <div className={cn(
-          "absolute bottom-[-120px] transition-all duration-700 ease-out z-40 pointer-events-none", 
-          isDartFlying ? "bottom-[45%] scale-50 rotate-[45deg] opacity-100" : "opacity-0 translate-y-20"
-        )}>
-          <div className="relative">
-            <div className="w-2 h-24 bg-zinc-800 rounded-full shadow-lg" />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-12 bg-accent clip-path-dart-tail shadow-md" />
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-6 bg-zinc-400 rounded-b-full" />
-          </div>
-        </div>
       </div>
 
-      {/* 실시간 대기 현황판 */}
-      <div className="w-full bg-white/40 backdrop-blur-md p-5 rounded-[2rem] border-4 border-white shadow-inner">
+      <div className="w-full bg-white/40 backdrop-blur-md p-5 rounded-[2rem] border-4 border-white shadow-inner mt-4">
         <div className="text-xs font-black text-secondary mb-3 flex items-center gap-2">
-          <Target size={14} /> 실시간 다트 스코어보드
+          <Target size={14} /> 실시간 룰렛 현황
         </div>
         <div className="grid grid-cols-2 gap-2">
            {participants.map(p => {
@@ -217,17 +207,15 @@ export const RouletteGame = () => {
 
       <div className="w-full space-y-4">
         {currentIndex < participants.length ? (
-          <Button onClick={throwDart} disabled={isSpinning || isDartFlying} className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3">
-            {isSpinning ? '조준 중... (두근두근! 🎯)' : isDartFlying ? '발사 완료!' : <><User /> {participants[currentIndex].name}님 다트 던지기!</>}
+          <Button onClick={spinRoulette} disabled={isSpinning} className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3">
+            {isSpinning ? '돌아가는 중... (두근두근! 🎡)' : <><User /> {participants[currentIndex].name}님 룰렛 돌리기!</>}
           </Button>
         ) : (
           <div className="text-center py-6 text-secondary font-black animate-pulse flex items-center justify-center gap-2 bg-secondary/5 rounded-3xl border-2 border-dashed border-secondary/20">
-            <CheckCircle2 /> 모든 결과가 나왔습니다! 분석 중...
+            <CheckCircle2 /> 결과 분석 중...
           </div>
         )}
       </div>
-
-      <style jsx>{` .clip-path-dart-tail { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); } `}</style>
     </div>
   );
 };

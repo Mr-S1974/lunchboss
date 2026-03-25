@@ -14,12 +14,19 @@ import { ChevronRight, UtensilsCrossed, Sparkles, TrendingUp, Trophy, ArrowLeft 
 
 const MainScreen = () => {
   const [view, setView] = useState<'intro' | 'setup' | 'game'>('intro');
-  const { gameMode, setGameMode, winner } = useGame();
+  const { gameMode, setGameMode, winner, participants } = useGame();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // 인원이 초기화되면 자동으로 설정 화면으로 복귀
+  useEffect(() => {
+    if (mounted && view === 'game' && participants.length === 0) {
+      setView('setup');
+    }
+  }, [participants.length, view, mounted]);
 
   const handleGameSelect = (mode: 'ladder' | 'roulette' | 'tap') => {
     setGameMode(mode);
@@ -33,7 +40,6 @@ const MainScreen = () => {
       <div className="flex flex-col items-center justify-center min-h-[100svh] text-center p-6 relative overflow-hidden">
         <FloatingIcons />
         
-        {/* 상단 장식 요소 */}
         <div className="absolute top-10 left-10 opacity-20 rotate-[-15deg] hidden sm:block">
            <Trophy size={80} className="text-primary" />
         </div>
@@ -91,7 +97,6 @@ const MainScreen = () => {
           </div>
         </div>
         
-        {/* 광고/푸터 배너 */}
         <div className="absolute bottom-6 left-6 right-6 h-20 bg-white/40 backdrop-blur-md border border-white/60 rounded-[2rem] flex items-center justify-between px-8 overflow-hidden shadow-xl max-w-md mx-auto group cursor-pointer hover:bg-white/60 transition-colors">
            <div className="flex items-center gap-4">
              <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary font-black shrink-0">
@@ -133,7 +138,7 @@ const MainScreen = () => {
                  <span className="text-6xl group-hover:scale-125 transition-transform group-hover:rotate-[-12deg]">🎡</span>
                  <div className="text-left">
                    <div className="leading-none mb-1">복불복 룰렛</div>
-                   <div className="text-xs font-bold opacity-70">다트로 맞추는 복불복</div>
+                   <div className="text-xs font-bold opacity-70">긴장감 넘치는 회전판</div>
                  </div>
               </Button>
               <Button className="h-28 text-2xl font-black gap-6 border-4 border-accent/10 bg-white hover:bg-accent hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm" variant="outline" onClick={() => handleGameSelect('tap')}>
