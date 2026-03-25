@@ -62,7 +62,7 @@ export const ResultScreen = () => {
   if (!winner) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center bg-white/95 backdrop-blur-2xl overflow-y-auto pt-10 pb-20 px-6">
+    <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-2xl overflow-y-auto">
       <div className="absolute inset-0 pointer-events-none overflow-hidden h-full">
         {particles.map((p, i) => (
           <div 
@@ -80,7 +80,7 @@ export const ResultScreen = () => {
         ))}
       </div>
 
-      <div className="relative z-10 w-full max-w-md text-center flex flex-col gap-6 animate-in zoom-in-95 duration-500">
+      <div className="relative z-10 w-full max-w-md mx-auto text-center flex flex-col gap-6 animate-in zoom-in-95 duration-500 py-12 px-6">
         <div className="space-y-1">
           <h2 className="text-secondary text-xl font-black tracking-tighter uppercase">Today's Lunch Boss</h2>
           <h1 className="text-5xl font-black sunny-text hero-gradient bg-clip-text text-transparent">
@@ -141,8 +141,8 @@ export const ResultScreen = () => {
               <ListChecks size={20} />
               <h3>전체 참가자 결과</h3>
             </div>
-            <ScrollArea className="bg-white/50 backdrop-blur-md rounded-[2.5rem] border-4 border-white p-4 shadow-inner max-h-[300px]">
-               <div className="space-y-2">
+            <ScrollArea className="bg-white/50 backdrop-blur-md rounded-[2.5rem] border-4 border-white p-4 shadow-inner max-h-[400px]">
+               <div className="space-y-2 pr-2">
                  {allResults.map((res, i) => {
                    const isBoss = (parseInt(res.amount.replace(/[^0-9]/g, '')) || 0) === maxVal;
                    return (
@@ -179,7 +179,7 @@ export const ResultScreen = () => {
           </Button>
         </div>
 
-        <Button variant="ghost" className="h-12 gap-2 text-muted-foreground font-bold" onClick={fullReset}>
+        <Button variant="ghost" className="h-12 gap-2 text-muted-foreground font-bold mb-8" onClick={fullReset}>
           <Home size={18} /> 처음부터 하기 (인원 재설정)
         </Button>
       </div>
