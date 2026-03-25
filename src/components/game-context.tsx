@@ -85,7 +85,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const fullReset = () => {
-    resetGame();
+    setGameMode(null);
+    setWinnerState(null);
+    setWinningAmount(null);
+    setAllResults([]);
     setParticipantsState([]);
   };
 
