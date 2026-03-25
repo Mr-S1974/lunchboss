@@ -5,8 +5,9 @@ import { useGame } from './game-context';
 import { generateGoldenBellCommendation } from '@/ai/flows/generate-golden-bell-commendation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Crown, Share2, RefreshCw, Star } from 'lucide-react';
+import { Crown, Share2, RefreshCw, PartyPopper } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { Badge } from './ui/badge';
 
 export const ResultScreen = () => {
   const { winner, resetGame } = useGame();
@@ -23,7 +24,7 @@ export const ResultScreen = () => {
           });
           setCommendation(result.commendationMessage);
         } catch (error) {
-          setCommendation(`와우! 오늘 점심은 ${winner.name}님이 쏘십니다! (멋져부러👍)`);
+          setCommendation(`와우! 오늘 점심은 ${winner.name} 보스가 쏘십니다! (멋져부러👍)`);
         } finally {
           setLoading(false);
         }
@@ -35,12 +36,12 @@ export const ResultScreen = () => {
   if (!winner) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-6 bg-background/95 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-6 bg-white/90 backdrop-blur-xl">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(15)].map((_, i) => (
           <div 
             key={i} 
-            className="absolute animate-float opacity-40 text-secondary"
+            className="absolute animate-float opacity-30 text-primary"
             style={{ 
               top: `${Math.random() * 100}%`, 
               left: `${Math.random() * 100}%`,
@@ -48,69 +49,65 @@ export const ResultScreen = () => {
               transform: `scale(${0.5 + Math.random()})`
             }}
           >
-            <Star size={24} fill="currentColor" />
+            <PartyPopper size={32} />
           </div>
         ))}
       </div>
 
-      <div className="relative z-10 w-full max-w-md text-center flex flex-col gap-8">
-        <div className="space-y-2">
-          <h2 className="text-secondary text-lg font-bold tracking-widest uppercase">Today's GoldenBell Hero</h2>
-          <h1 className="text-4xl font-black font-headline neon-text">
-            오늘의 주인공!
+      <div className="relative z-10 w-full max-w-md text-center flex flex-col gap-6">
+        <div className="space-y-1">
+          <h2 className="text-secondary text-xl font-black tracking-tighter uppercase">Today's Lunch Boss</h2>
+          <h1 className="text-5xl font-black sunny-text hero-gradient bg-clip-text text-transparent">
+            축하합니다!
           </h1>
         </div>
 
-        <Card className="bg-card border-primary border-4 shadow-[0_0_30px_hsl(var(--primary)/0.4)] overflow-visible">
-          <CardContent className="p-8 flex flex-col items-center gap-6">
+        <Card className="bg-white border-primary border-8 shadow-[0_20px_50px_rgba(255,165,0,0.3)] overflow-visible rounded-[3rem]">
+          <CardContent className="p-10 flex flex-col items-center gap-6">
             <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <Crown size={64} className="text-white drop-shadow-lg" />
+              <div className="w-40 h-40 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center soft-glow">
+                <Crown size={80} className="text-white drop-shadow-lg" />
               </div>
-              <div className="absolute -top-6 -right-6 animate-bounce">
-                <Badge className="bg-yellow-400 text-black px-3 py-1 text-sm font-black border-2 border-black rotate-12">
-                  BEST!
+              <div className="absolute -top-4 -right-8 animate-bounce">
+                <Badge className="bg-yellow-400 text-black px-4 py-2 text-md font-black border-4 border-black rotate-12 rounded-xl">
+                  LUNCH BOSS!
                 </Badge>
               </div>
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-bold mb-1">{winner.name}</div>
-              <div className="text-sm text-primary font-semibold">{winner.character}</div>
+              <div className="text-3xl font-black mb-1 text-foreground">{winner.name}</div>
+              <div className="text-lg text-primary font-bold bg-primary/10 px-4 py-1 rounded-full">{winner.character}</div>
             </div>
 
-            <div className="w-full bg-muted/30 p-4 rounded-xl border border-white/5">
+            <div className="w-full bg-muted/50 p-6 rounded-3xl border-2 border-primary/10">
               {loading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-full bg-primary/10" />
                   <Skeleton className="h-4 w-[80%] bg-primary/10" />
                 </div>
               ) : (
-                <p className="text-lg italic font-medium">"{commendation}"</p>
+                <p className="text-xl font-bold leading-relaxed text-foreground/80 italic">"{commendation}"</p>
               )}
             </div>
           </CardContent>
         </Card>
 
         <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-14 gap-2 border-primary/50" onClick={() => {}}>
-            <Share2 size={20} />
+          <Button variant="outline" className="h-16 gap-2 border-4 border-primary/20 text-lg font-bold rounded-2xl hover:bg-primary/5" onClick={() => {}}>
+            <Share2 size={24} />
             자랑하기
           </Button>
-          <Button className="h-14 gap-2 hero-gradient neon-glow" onClick={resetGame}>
-            <RefreshCw size={20} />
-            다시 한 판?
+          <Button className="h-16 gap-2 hero-gradient soft-glow text-lg font-bold rounded-2xl" onClick={resetGame}>
+            <RefreshCw size={24} />
+            다시 하기
           </Button>
         </div>
 
-        <div className="text-xs text-muted-foreground opacity-50 px-8">
-          한 번 더? (광고 시청 시 면제권 뽑기 기회 제공!)
-        </div>
+        <p className="text-sm font-semibold text-muted-foreground opacity-70">
+          모두가 행복한 점심시간, Lunch Boss가 응원합니다! 🍱
+        </p>
       </div>
     </div>
   );
 };
-
-function Badge({ children, className, ...props }: any) {
-  return <div className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`} {...props}>{children}</div>
-}

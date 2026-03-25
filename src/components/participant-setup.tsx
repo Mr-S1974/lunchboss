@@ -5,7 +5,7 @@ import { useGame, Participant, CharacterType } from './game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trash2, Plus, User, ArrowLeft } from 'lucide-react';
+import { Trash2, Plus, User, ArrowLeft, Utensils } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 
@@ -26,58 +26,67 @@ export const ParticipantSetup = ({ onNext }: { onNext: () => void }) => {
   return (
     <div className="flex flex-col h-full max-w-md mx-auto p-6 gap-6 relative z-10">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={resetGame}>
+        <Button variant="ghost" size="icon" onClick={resetGame} className="rounded-full hover:bg-white/50">
           <ArrowLeft />
         </Button>
-        <h2 className="text-2xl font-bold font-headline neon-text">Who's Hungry?</h2>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex gap-2">
-          <Input 
-            placeholder="이름 입력..." 
-            value={name} 
-            onChange={(e) => setName(e.target.value)}
-            className="bg-card/50 border-primary/30"
-          />
-          <Button size="icon" onClick={handleAdd} className="neon-glow">
-            <Plus />
-          </Button>
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {CHARACTERS.map(char => (
-            <Badge 
-              key={char} 
-              variant={selectedChar === char ? "default" : "outline"}
-              className={`cursor-pointer whitespace-nowrap px-4 py-2 text-xs transition-all ${selectedChar === char ? 'scale-105' : 'opacity-60'}`}
-              onClick={() => setSelectedChar(char)}
-            >
-              {char}
-            </Badge>
-          ))}
+        <div className="flex flex-col">
+          <h2 className="text-3xl font-black sunny-text text-primary">점심 멤버 소환</h2>
+          <p className="text-sm font-bold text-muted-foreground">함께 먹을 사람을 추가해주세요!</p>
         </div>
       </div>
 
-      <ScrollArea className="flex-1 bg-card/20 rounded-xl border border-white/5 p-4">
+      <Card className="bg-white/80 backdrop-blur-sm border-4 border-primary/10 rounded-[2rem] p-2">
+        <CardContent className="p-4 space-y-4">
+          <div className="flex gap-2">
+            <Input 
+              placeholder="이름을 입력하세요" 
+              value={name} 
+              onChange={(e) => setName(e.target.value)}
+              className="bg-white border-2 border-primary/20 h-12 rounded-xl focus:ring-primary font-bold"
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+            />
+            <Button size="icon" onClick={handleAdd} className="h-12 w-12 rounded-xl hero-gradient soft-glow">
+              <Plus />
+            </Button>
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {CHARACTERS.map(char => (
+              <Badge 
+                key={char} 
+                variant={selectedChar === char ? "default" : "outline"}
+                className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm font-bold transition-all border-2 ${selectedChar === char ? 'scale-105 border-primary bg-primary' : 'opacity-60 border-primary/20 bg-white'}`}
+                onClick={() => setSelectedChar(char)}
+              >
+                {char}
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      <ScrollArea className="flex-1 bg-white/30 backdrop-blur-sm rounded-[2rem] border-4 border-white p-4 shadow-inner">
         <div className="space-y-3">
           {participants.length === 0 && (
-            <div className="text-center py-10 opacity-30 italic">참가자를 추가해주세요!</div>
+            <div className="text-center py-16 opacity-40 flex flex-col items-center gap-3">
+              <Utensils size={48} className="text-muted-foreground" />
+              <p className="font-black italic">아직 아무도 없어요!<br/>멤버를 추가해주세요.</p>
+            </div>
           )}
           {participants.map((p) => (
-            <Card key={p.id} className="bg-card/50 border-white/10 hover:border-primary/50 transition-colors">
+            <Card key={p.id} className="bg-white/90 border-2 border-primary/5 hover:border-primary/30 transition-all card-hover rounded-2xl">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                    <User size={20} />
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border-2 border-primary/10">
+                    {p.name[0]}
                   </div>
                   <div>
-                    <div className="font-semibold">{p.name}</div>
-                    <div className="text-xs text-muted-foreground">{p.character}</div>
+                    <div className="font-black text-lg">{p.name}</div>
+                    <div className="text-xs font-bold text-secondary uppercase tracking-wider">{p.character}</div>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" className="text-destructive/50 hover:text-destructive" onClick={() => removeParticipant(p.id)}>
-                  <Trash2 size={18} />
+                <Button variant="ghost" size="icon" className="text-destructive/40 hover:text-destructive hover:bg-destructive/5 rounded-full" onClick={() => removeParticipant(p.id)}>
+                  <Trash2 size={20} />
                 </Button>
               </CardContent>
             </Card>
@@ -86,11 +95,11 @@ export const ParticipantSetup = ({ onNext }: { onNext: () => void }) => {
       </ScrollArea>
 
       <Button 
-        className="w-full py-6 text-lg font-bold hero-gradient neon-glow" 
+        className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] disabled:opacity-50" 
         disabled={participants.length < 2}
         onClick={onNext}
       >
-        게임 시작!
+        보스 결정하기!
       </Button>
     </div>
   );

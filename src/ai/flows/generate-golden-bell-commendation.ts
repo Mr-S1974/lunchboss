@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview A Genkit flow that generates a unique and humorous 'Hero's Commendation' message for the GoldenBell Hero.
+ * @fileOverview A Genkit flow that generates a unique and humorous 'Lunch Boss' message for the winner.
  *
  * - generateGoldenBellCommendation - A function that handles the commendation generation process.
  * - GenerateGoldenBellCommendationInput - The input type for the generateGoldenBellCommendation function.
@@ -11,44 +11,44 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const GenerateGoldenBellCommendationInputSchema = z.object({
-  winnerName: z.string().describe("The name of the GoldenBell Hero who is paying for lunch."),
-  winnerCharacter: z.string().describe("The humorous character type assigned to the winner (e.g., '법카 장전 과장')."),
+  winnerName: z.string().describe("The name of the Lunch Boss who is paying for lunch."),
+  winnerCharacter: z.string().describe("The humorous character type assigned to the winner."),
 });
 export type GenerateGoldenBellCommendationInput = z.infer<typeof GenerateGoldenBellCommendationInputSchema>;
 
 const GenerateGoldenBellCommendationOutputSchema = z.object({
-  commendationMessage: z.string().describe("A unique and humorous commendation message for the GoldenBell Hero."),
+  commendationMessage: z.string().describe("A unique and humorous commendation message for the Lunch Boss."),
 });
 export type GenerateGoldenBellCommendationOutput = z.infer<typeof GenerateGoldenBellCommendationOutputSchema>;
 
 const generateCommendationPrompt = ai.definePrompt({
-  name: 'generateGoldenBellCommendationPrompt',
+  name: 'generateLunchBossCommendationPrompt',
   input: { schema: GenerateGoldenBellCommendationInputSchema },
   output: { schema: GenerateGoldenBellCommendationOutputSchema },
-  prompt: `You are a lively and humorous announcer for the "GoldenBell Squad" app.
-  Your task is to generate a unique, exciting, and highly shareable commendation message for the "GoldenBell Hero" who has been selected to pay for lunch.
+  prompt: `You are a lively and humorous announcer for the "Lunch Boss" app.
+  Your task is to generate a unique, exciting, and friendly commendation message for the "Lunch Boss" who has been selected to pay for lunch.
 
   The winner's name is "{{{winnerName}}}".
   They are playing the role of "{{{winnerCharacter}}}".
 
   Craft a message that:
-  - Celebrates their 'sacrifice' with a touch of humor.
-  - Elevates them to the status of a true hero.
-  - Motivates others to share this glorious announcement on social media or messaging apps.
+  - Celebrates them as the 'Boss' of today's lunch.
+  - Is lighthearted, energetic, and brings a smile to the team.
+  - Uses food-related metaphors or office humor.
   - Is concise and impactful, suitable for an app's result screen.
   - End with a celebratory phrase.
 
   Examples:
-  "와우! 오늘 점심은 **[과장님]**이 쏘십니다! (멋져부러👍)"
-  "긴급 속보! '텅장 사원' **[김대리]**가 오늘의 점심을 선사합니다! 박수 짝짝! 🎉"
-  "세상에 이런 감동이! '법카 사냥꾼 대리' **[이팀장님]**께서 모든 점심 값을 쾌척합니다! 감사합니다! 💸"
+  "오늘의 진정한 리더! **[이대리님]**이 쏘는 점심은 꿀맛 보장! 🍱"
+  "긴급 속보! 오늘의 점심 보스는 바로 **[박과장님]**! 잘 먹겠습니다! 🙏"
+  "세상에서 가장 멋진 결제! **[김사원]** 보스의 영수증 플렉스! 가즈아! 💸"
 
-  Generate only the commendation message.`,
+  Generate only the commendation message in Korean.`,
 });
 
 const generateGoldenBellCommendationFlow = ai.defineFlow(
   {
-    name: 'generateGoldenBellCommendationFlow',
+    name: 'generateLunchBossCommendationFlow',
     inputSchema: GenerateGoldenBellCommendationInputSchema,
     outputSchema: GenerateGoldenBellCommendationOutputSchema,
   },
