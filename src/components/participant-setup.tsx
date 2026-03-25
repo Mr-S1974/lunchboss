@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useGame, Participant, CharacterType } from './game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { User, ArrowLeft, Users, UserPlus, Sparkles } from 'lucide-react';
+import { ArrowLeft, Users, UserPlus, Sparkles, Home } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 
@@ -17,16 +17,13 @@ const FUNNY_NAMES = [
   '맛집 내비게이션', '카드 슬래셔', '점심의 지배자', '퇴근 갈망러'
 ];
 
-export const ParticipantSetup = ({ onNext }: { onNext: () => void }) => {
-  const { participants, setParticipants, updateParticipant, resetGame } = useGame();
+export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void, onBack: () => void }) => {
+  const { participants, setParticipants, updateParticipant } = useGame();
   const [step, setStep] = useState<'count' | 'names'>('count');
-  const [count, setCount] = useState<number>(0);
   const [inputName, setInputName] = useState('');
   const [selectedChar, setSelectedChar] = useState<CharacterType>(CHARACTERS[0]);
 
-  // 인원수 선택 시 초기 슬롯 생성 및 가명 배정
   const handleCountSelect = (n: number) => {
-    setCount(n);
     const shuffledNames = [...FUNNY_NAMES].sort(() => Math.random() - 0.5);
     const initialSlots: Participant[] = Array.from({ length: n }, (_, i) => ({
       id: `slot-${i}`,
@@ -37,11 +34,9 @@ export const ParticipantSetup = ({ onNext }: { onNext: () => void }) => {
     setStep('names');
   };
 
-  // 상단 입력창에서 추가 시 첫 번째 "가명"인 칸부터 자동 입력 (사용자가 직접 수정한 칸은 제외하는 로직 대신 단순 순차 입력)
   const handleQuickAdd = () => {
     if (!inputName.trim()) return;
 
-    // 비어있거나 가명인 상태인 첫 번째 칸 찾기 (여기서는 단순하게 비어있지 않은 첫 번째 가명 슬롯을 덮어씌움)
     const targetIndex = participants.findIndex(p => FUNNY_NAMES.includes(p.name) || p.name === '');
     const finalIndex = targetIndex === -1 ? 0 : targetIndex;
     
@@ -79,7 +74,9 @@ export const ParticipantSetup = ({ onNext }: { onNext: () => void }) => {
           ))}
         </div>
         
-        <Button variant="ghost" onClick={resetGame} className="font-bold text-muted-foreground mt-4">메인으로 돌아가기</Button>
+        <Button variant="ghost" onClick={onBack} className="font-bold text-muted-foreground mt-4 gap-2">
+           <Home size={18} /> 메인으로 돌아가기
+        </Button>
       </div>
     );
   }

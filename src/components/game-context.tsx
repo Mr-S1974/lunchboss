@@ -21,7 +21,7 @@ export type GameMode = 'ladder' | 'roulette' | 'tap' | null;
 interface GameContextType {
   participants: Participant[];
   gameMode: GameMode;
-  winner: Participant | null;
+  winner: Participant | null; // Keep for legacy/single winner games like Tap
   winningAmount: string | null;
   allResults: GameResult[];
   setParticipants: (participants: Participant[]) => void;
@@ -54,19 +54,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setAllResults(results);
     
     let maxVal = -1;
-    let currentWinner = results[0].participant;
-    let currentAmount = results[0].amount;
+    let currentAmount = "0";
 
     results.forEach(res => {
       const val = parseInt(res.amount.replace(/[^0-9]/g, '')) || 0;
       if (val > maxVal) {
         maxVal = val;
-        currentWinner = res.participant;
         currentAmount = res.amount;
       }
     });
 
-    setWinnerState(currentWinner);
+    // Find the first one to set as primary winner for AI prompt context
+    const primaryWinner = results.find(r => (parseInt(r.amount.replace(/[^0-9]/g, '')) || 0) === maxVal)?.participant;
+
+    setWinnerState(primaryWinner || results[0].participant);
     setWinningAmount(currentAmount);
   };
 
@@ -81,7 +82,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setWinnerState(null);
     setWinningAmount(null);
     setAllResults([]);
-    // 참가자 명단은 유지하여 다른 게임을 바로 할 수 있게 함
+    // Participant list is preserved to allow playing another game immediately
   };
 
   const fullReset = () => {

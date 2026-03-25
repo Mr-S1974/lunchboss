@@ -10,7 +10,7 @@ import { RouletteGame } from '@/components/game/roulette-game';
 import { TapSurvival } from '@/components/game/tap-game';
 import { ResultScreen } from '@/components/result-screen';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, UtensilsCrossed, Sparkles, TrendingUp, Trophy, ArrowLeft } from 'lucide-react';
+import { ChevronRight, UtensilsCrossed, Sparkles, TrendingUp, Trophy, ArrowLeft, Info } from 'lucide-react';
 
 const MainScreen = () => {
   const [view, setView] = useState<'intro' | 'setup' | 'game'>('intro');
@@ -21,7 +21,7 @@ const MainScreen = () => {
     setMounted(true);
   }, []);
 
-  // 인원이 초기화되면 자동으로 설정 화면으로 복귀
+  // Return to setup if participants are cleared (full reset)
   useEffect(() => {
     if (mounted && view === 'game' && participants.length === 0) {
       setView('setup');
@@ -96,25 +96,12 @@ const MainScreen = () => {
              </div>
           </div>
         </div>
-        
-        <div className="absolute bottom-6 left-6 right-6 h-20 bg-white/40 backdrop-blur-md border border-white/60 rounded-[2rem] flex items-center justify-between px-8 overflow-hidden shadow-xl max-w-md mx-auto group cursor-pointer hover:bg-white/60 transition-colors">
-           <div className="flex items-center gap-4">
-             <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center text-primary font-black shrink-0">
-               AD
-             </div>
-             <div className="text-left">
-               <div className="font-black text-sm text-primary group-hover:underline">오늘은 샐러드 어때요? 🥗</div>
-               <div className="text-[10px] font-bold text-muted-foreground">근처 샐러드 가게 10% 쿠폰 발급 중</div>
-             </div>
-           </div>
-           <ChevronRight size={20} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
-        </div>
       </div>
     );
   }
 
   if (view === 'setup') {
-    return <ParticipantSetup onNext={() => setView('game')} />;
+    return <ParticipantSetup onNext={() => setView('game')} onBack={() => setView('intro')} />;
   }
 
   return (
@@ -127,26 +114,43 @@ const MainScreen = () => {
             </div>
             
             <div className="grid gap-6">
-              <Button className="h-28 text-2xl font-black gap-6 border-4 border-primary/10 bg-white hover:bg-primary hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm" variant="outline" onClick={() => handleGameSelect('ladder')}>
-                 <span className="text-6xl group-hover:scale-125 transition-transform group-hover:rotate-12">🪜</span> 
-                 <div className="text-left">
-                   <div className="leading-none mb-1">사다리 타기</div>
-                   <div className="text-xs font-bold opacity-70">클래식한 운명 테스트</div>
+              <Button className="h-auto p-6 text-2xl font-black gap-6 border-4 border-primary/10 bg-white hover:bg-primary hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm flex flex-col items-start" variant="outline" onClick={() => handleGameSelect('ladder')}>
+                 <div className="flex items-center gap-4 w-full">
+                    <span className="text-5xl group-hover:scale-125 transition-transform group-hover:rotate-12">🪜</span> 
+                    <div className="text-left">
+                      <div className="leading-none mb-1">사다리 타기</div>
+                      <div className="text-xs font-bold opacity-70">클래식한 운명 테스트</div>
+                    </div>
                  </div>
+                 <p className="text-[11px] font-bold text-left opacity-60 leading-relaxed group-hover:opacity-100">
+                    전원이 각자의 운명을 따라가는 클래식 게임. 결과가 1:1로 매칭되어 누가 독박을 쓸지 모릅니다!
+                 </p>
               </Button>
-              <Button className="h-28 text-2xl font-black gap-6 border-4 border-secondary/10 bg-white hover:bg-secondary hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm" variant="outline" onClick={() => handleGameSelect('roulette')}>
-                 <span className="text-6xl group-hover:scale-125 transition-transform group-hover:rotate-[-12deg]">🎡</span>
-                 <div className="text-left">
-                   <div className="leading-none mb-1">복불복 룰렛</div>
-                   <div className="text-xs font-bold opacity-70">긴장감 넘치는 회전판</div>
+
+              <Button className="h-auto p-6 text-2xl font-black gap-6 border-4 border-secondary/10 bg-white hover:bg-secondary hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm flex flex-col items-start" variant="outline" onClick={() => handleGameSelect('roulette')}>
+                 <div className="flex items-center gap-4 w-full">
+                    <span className="text-5xl group-hover:scale-125 transition-transform group-hover:rotate-[-12deg]">🎡</span>
+                    <div className="text-left">
+                      <div className="leading-none mb-1">복불복 룰렛</div>
+                      <div className="text-xs font-bold opacity-70">긴장감 넘치는 회전판</div>
+                    </div>
                  </div>
+                 <p className="text-[11px] font-bold text-left opacity-60 leading-relaxed group-hover:opacity-100">
+                    다양한 금액이 섞인 룰렛! 칸이 2배로 많아 동일한 금액이 여러 명 나올 수도 있는 스릴 만점 게임.
+                 </p>
               </Button>
-              <Button className="h-28 text-2xl font-black gap-6 border-4 border-accent/10 bg-white hover:bg-accent hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm" variant="outline" onClick={() => handleGameSelect('tap')}>
-                 <span className="text-6xl group-hover:scale-125 transition-transform group-hover:scale-110">🖐️</span>
-                 <div className="text-left">
-                   <div className="leading-none mb-1">지목 셔플</div>
-                   <div className="text-xs font-bold opacity-70">순발력으로 살아남기</div>
+
+              <Button className="h-auto p-6 text-2xl font-black gap-6 border-4 border-accent/10 bg-white hover:bg-accent hover:text-white transition-all card-hover group rounded-[2.5rem] shadow-sm flex flex-col items-start" variant="outline" onClick={() => handleGameSelect('tap')}>
+                 <div className="flex items-center gap-4 w-full">
+                    <span className="text-5xl group-hover:scale-125 transition-transform group-hover:scale-110">🖐️</span>
+                    <div className="text-left">
+                      <div className="leading-none mb-1">지목 셔플</div>
+                      <div className="text-xs font-bold opacity-70">순발력으로 살아남기</div>
+                    </div>
                  </div>
+                 <p className="text-[11px] font-bold text-left opacity-60 leading-relaxed group-hover:opacity-100">
+                    단 한 명의 '독박'을 정하거나 '면제'를 뽑는 터치 서바이벌! 순발력이 필요한 지목 게임입니다.
+                 </p>
               </Button>
             </div>
             
