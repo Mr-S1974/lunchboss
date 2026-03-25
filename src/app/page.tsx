@@ -10,7 +10,7 @@ import { RouletteGame } from '@/components/game/roulette-game';
 import { TapSurvival } from '@/components/game/tap-game';
 import { ResultScreen } from '@/components/result-screen';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, UtensilsCrossed, Sparkles, TrendingUp, Trophy } from 'lucide-react';
+import { ChevronRight, UtensilsCrossed, Sparkles, TrendingUp, Trophy, ArrowLeft } from 'lucide-react';
 
 const MainScreen = () => {
   const [view, setView] = useState<'intro' | 'setup' | 'game'>('intro');
