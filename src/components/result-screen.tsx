@@ -11,10 +11,29 @@ import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 
+interface Particle {
+  top: string;
+  left: string;
+  delay: string;
+  scale: string;
+}
+
 export const ResultScreen = () => {
   const { winner, winningAmount, allResults, resetGame } = useGame();
   const [commendation, setCommendation] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [particles, setParticles] = useState<Particle[]>([]);
+
+  useEffect(() => {
+    // Generate particles only on the client side to avoid hydration mismatch
+    const newParticles = [...Array(20)].map(() => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 5}s`,
+      scale: `${0.5 + Math.random()}`
+    }));
+    setParticles(newParticles);
+  }, []);
 
   useEffect(() => {
     if (winner) {
@@ -40,15 +59,15 @@ export const ResultScreen = () => {
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center bg-white/95 backdrop-blur-2xl overflow-y-auto pt-10 pb-20 px-6">
       <div className="absolute inset-0 pointer-events-none overflow-hidden h-full">
-        {[...Array(20)].map((_, i) => (
+        {particles.map((p, i) => (
           <div 
             key={i} 
             className="absolute animate-float opacity-30 text-primary"
             style={{ 
-              top: `${Math.random() * 100}%`, 
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              transform: `scale(${0.5 + Math.random()})`
+              top: p.top, 
+              left: p.left,
+              animationDelay: p.delay,
+              transform: `scale(${p.scale})`
             }}
           >
             <PartyPopper size={32} />
