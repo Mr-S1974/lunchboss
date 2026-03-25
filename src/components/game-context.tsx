@@ -28,7 +28,9 @@ interface GameContextType {
   updateParticipant: (id: string, name: string, character?: CharacterType) => void;
   setGameMode: (mode: GameMode) => void;
   setFinalResults: (results: GameResult[]) => void;
+  setWinner: (winner: Participant | null) => void;
   resetGame: () => void;
+  fullReset: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -51,7 +53,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const setFinalResults = (results: GameResult[]) => {
     setAllResults(results);
     
-    // Find winner (max amount)
     let maxVal = -1;
     let currentWinner = results[0].participant;
     let currentAmount = results[0].amount;
@@ -69,11 +70,22 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setWinningAmount(currentAmount);
   };
 
+  const setWinner = (w: Participant | null) => {
+    setWinnerState(w);
+    setWinningAmount(null);
+    setAllResults([]);
+  };
+
   const resetGame = () => {
     setGameMode(null);
     setWinnerState(null);
     setWinningAmount(null);
     setAllResults([]);
+    // 참가자 명단은 유지하여 다른 게임을 바로 할 수 있게 함
+  };
+
+  const fullReset = () => {
+    resetGame();
     setParticipantsState([]);
   };
 
@@ -88,7 +100,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateParticipant,
       setGameMode,
       setFinalResults,
-      resetGame
+      setWinner,
+      resetGame,
+      fullReset
     }}>
       {children}
     </GameContext.Provider>

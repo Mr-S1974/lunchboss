@@ -6,7 +6,7 @@ import { useGame } from './game-context';
 import { generateGoldenBellCommendation } from '@/ai/flows/generate-golden-bell-commendation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Crown, Share2, RefreshCw, PartyPopper, Wallet, ListChecks } from 'lucide-react';
+import { Crown, Share2, RefreshCw, PartyPopper, Wallet, ListChecks, Home } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
@@ -19,13 +19,12 @@ interface Particle {
 }
 
 export const ResultScreen = () => {
-  const { winner, winningAmount, allResults, resetGame } = useGame();
+  const { winner, winningAmount, allResults, resetGame, fullReset } = useGame();
   const [commendation, setCommendation] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
-    // Generate particles only on the client side to avoid hydration mismatch
     const newParticles = [...Array(20)].map(() => ({
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
@@ -83,7 +82,6 @@ export const ResultScreen = () => {
           </h1>
         </div>
 
-        {/* BOSS Card */}
         <Card className="bg-white border-primary border-[12px] shadow-[0_30px_60px_rgba(255,165,0,0.4)] overflow-visible rounded-[3.5rem] relative">
           <CardContent className="p-8 flex flex-col items-center gap-4">
             <div className="relative">
@@ -125,7 +123,6 @@ export const ResultScreen = () => {
           </CardContent>
         </Card>
 
-        {/* All Participants List */}
         <div className="space-y-3 text-left">
           <div className="flex items-center gap-2 px-2 text-primary font-black">
             <ListChecks size={20} />
@@ -157,7 +154,7 @@ export const ResultScreen = () => {
         <div className="grid grid-cols-2 gap-4">
           <Button variant="outline" className="h-16 gap-2 border-4 border-primary/20 text-lg font-bold rounded-[1.5rem] hover:bg-primary/5" onClick={() => {}}>
             <Share2 size={24} />
-            자랑하기
+            공유하기
           </Button>
           <Button className="h-16 gap-2 hero-gradient soft-glow text-lg font-bold rounded-[1.5rem]" onClick={resetGame}>
             <RefreshCw size={24} />
@@ -165,9 +162,9 @@ export const ResultScreen = () => {
           </Button>
         </div>
 
-        <p className="text-xs font-bold text-muted-foreground opacity-60">
-          모두가 행복한 점심시간, Lunch Boss가 응원합니다! 🍱
-        </p>
+        <Button variant="ghost" className="h-12 gap-2 text-muted-foreground font-bold" onClick={fullReset}>
+          <Home size={18} /> 처음부터 하기 (인원 재설정)
+        </Button>
       </div>
     </div>
   );
