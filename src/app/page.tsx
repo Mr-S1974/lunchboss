@@ -95,7 +95,7 @@ const MainScreen = () => {
           </div>
 
           <div className="grid items-stretch gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-            <section className="rounded-[2rem] border border-white/70 bg-white/82 p-6 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl sm:p-8">
+            <section className="rounded-[2rem] border border-white/70 bg-white/82 p-6 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl lg:p-10">
               <div className="mb-8 flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
                   <Sparkles size={14} />
@@ -113,14 +113,14 @@ const MainScreen = () => {
                   오늘 점심 분위기를 정리하는 가장 빠른 흐름
                 </div>
                 <div>
-                  <h1 className="font-headline text-5xl font-extrabold leading-[0.92] tracking-[-0.05em] text-foreground sm:text-6xl lg:text-7xl">
+                  <h1 className="font-headline text-3xl font-extrabold leading-[1.02] tracking-[-0.05em] text-foreground break-keep whitespace-normal sm:text-4xl md:text-6xl lg:text-7xl">
                     심플하게 시작하고
                     <br />
                     경쾌하게 끝내는
                     <br />
                     점심 결제 게임
                   </h1>
-                  <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+                  <p className="mt-5 max-w-2xl break-keep whitespace-normal text-base leading-7 text-muted-foreground sm:text-lg">
                     회의 직후, 외근 전, 팀 점심 직전. 너무 유치하지 않으면서도 정적이지 않게 흐름을 만들어 주는
                     가벼운 런치 게임입니다. 인원만 고르면 바로 시작할 수 있고, 화면 자체도 비어 보이지 않게
                     정보와 리듬을 채웠습니다.
