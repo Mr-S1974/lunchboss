@@ -6,7 +6,7 @@ import { useGame, Participant } from '../game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Play, ChevronRight, User } from 'lucide-react';
+import { Play, User, CheckCircle2 } from 'lucide-react';
 
 interface Bar {
   line: number;
@@ -17,6 +17,7 @@ interface ParticipantPath {
   participant: Participant;
   path: { x: number, y: number }[];
   endIndex: number;
+  amount: string;
 }
 
 export const LadderGame = () => {
@@ -31,18 +32,21 @@ export const LadderGame = () => {
   const [finishedPaths, setFinishedPaths] = useState<ParticipantPath[]>([]);
   const [activePath, setActivePath] = useState<{ x: number, y: number }[]>([]);
 
-  // Initialize amounts and ladder structure
+  // Initialize amounts
   useEffect(() => {
     if (participants.length > 0) {
-      setAmounts(participants.map((_, i) => i === 0 ? "결제(BOSS)" : "통과"));
+      // Default amounts: one high value, others low or zero
+      const defaultAmts = participants.map((_, i) => i === 0 ? "50000" : "0");
+      setAmounts(defaultAmts);
       
+      // Generate bars
       const bars: Bar[] = [];
       const numLines = participants.length;
       for (let i = 0; i < numLines - 1; i++) {
-        const numBars = Math.floor(Math.random() * 3) + 3; // More bars for complexity
+        const numBars = Math.floor(Math.random() * 3) + 3;
         for (let j = 0; j < numBars; j++) {
           const y = 40 + (Math.random() * 300);
-          if (!bars.some(b => b.line === i && Math.abs(b.y - y) < 25)) {
+          if (!bars.some(b => b.line === i && Math.abs(b.y - y) < 30)) {
             bars.push({ line: i, y });
           }
         }
@@ -80,6 +84,12 @@ export const LadderGame = () => {
     return { path, endIndex: currentLine };
   };
 
+  const parseAmount = (str: string) => {
+    const val = parseInt(str.replace(/[^0-9]/g, '')) || 0;
+    const boost = (str.includes("BOSS") || str.includes("결제")) ? 1000000 : 0;
+    return val + boost;
+  };
+
   const startNextParticipant = () => {
     if (animating || currentIndex >= participants.length) return;
     
@@ -88,35 +98,39 @@ export const LadderGame = () => {
     setActivePath(path);
 
     setTimeout(() => {
-      setFinishedPaths(prev => [...prev, { 
+      const newPathResult: ParticipantPath = { 
         participant: participants[currentIndex], 
         path, 
-        endIndex 
-      }]);
+        endIndex,
+        amount: amounts[endIndex]
+      };
+      
+      const updatedFinishedPaths = [...finishedPaths, newPathResult];
+      setFinishedPaths(updatedFinishedPaths);
       setActivePath([]);
       setAnimating(false);
-      setCurrentIndex(prev => prev + 1);
+      
+      const nextIdx = currentIndex + 1;
+      setCurrentIndex(nextIdx);
 
       // Final Check: All participants finished
-      if (currentIndex === participants.length - 1) {
+      if (nextIdx === participants.length) {
         setTimeout(() => {
-          // Find who hit the "BOSS" or the target result
-          // For simplicity, we find the one who hit the first amount entry if it's "BOSS"
-          // Or just find the one who landed on any "BOSS" string
-          const bossResultIndex = amounts.findIndex(a => a.includes("BOSS") || a.includes("결제"));
-          const actualBossIdx = bossResultIndex !== -1 ? bossResultIndex : 0;
-          
-          const bossPath = [...finishedPaths, { participant: participants[currentIndex], path, endIndex }].find(p => p.endIndex === actualBossIdx);
-          
-          if (bossPath) {
-            setWinner(bossPath.participant, amounts[bossPath.endIndex]);
-          } else {
-             // Fallback
-             setWinner(participants[Math.floor(Math.random() * participants.length)], amounts[0]);
-          }
-        }, 1000);
+          let maxVal = -1;
+          let winnerResult = updatedFinishedPaths[0];
+
+          updatedFinishedPaths.forEach(rp => {
+            const val = parseAmount(rp.amount);
+            if (val > maxVal) {
+              maxVal = val;
+              winnerResult = rp;
+            }
+          });
+
+          setWinner(winnerResult.participant, winnerResult.amount);
+        }, 1500);
       }
-    }, 2500); // Slower animation as requested
+    }, 2500);
   };
 
   if (step === 'setup') {
@@ -124,7 +138,7 @@ export const LadderGame = () => {
       <div className="flex flex-col gap-6 w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4">
         <div className="text-center space-y-2">
           <h3 className="text-3xl font-black text-primary italic">LADDER SETUP</h3>
-          <p className="text-sm font-bold text-muted-foreground">도착 지점의 결과를 입력하세요!</p>
+          <p className="text-sm font-bold text-muted-foreground">각 도착 지점의 배정 금액을 입력하세요!</p>
         </div>
 
         <div className="grid gap-3 bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-4 border-white shadow-xl">
@@ -141,6 +155,7 @@ export const LadderGame = () => {
                   setAmounts(newAmts);
                 }}
                 className="h-12 rounded-xl border-2 border-primary/10 font-bold focus:ring-primary bg-white"
+                placeholder="금액 또는 결과 입력"
               />
             </div>
           ))}
@@ -150,7 +165,7 @@ export const LadderGame = () => {
           onClick={() => setStep('playing')}
           className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-2"
         >
-          <Play fill="currentColor" /> 게임 시작!
+          <Play fill="currentColor" /> 사다리 준비 완료!
         </Button>
       </div>
     );
@@ -163,27 +178,30 @@ export const LadderGame = () => {
         <p className="text-xs font-bold text-muted-foreground">
           {currentIndex < participants.length 
             ? `${participants[currentIndex].name}님이 출발할 차례입니다!` 
-            : "모든 참가자가 도착했습니다!"}
+            : "모든 참가자가 도착했습니다! 결과를 확인합니다."}
         </p>
       </div>
       
       <div className="relative w-full h-[480px] bg-white/50 backdrop-blur-sm rounded-[3rem] border-4 border-white shadow-inner p-10 flex flex-col justify-between overflow-hidden">
         {/* Participants Labels */}
         <div className="flex justify-between w-full relative z-10 px-2">
-          {participants.map((p, idx) => (
-            <div key={p.id} className={cn(
-              "flex flex-col items-center w-0 overflow-visible transition-all duration-500",
-              currentIndex === idx ? "scale-125 translate-y-[-5px]" : "opacity-40"
-            )}>
-              <div className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center font-black text-sm border-2 transition-colors",
-                currentIndex === idx ? "bg-primary text-white border-primary shadow-lg" : "bg-white text-muted-foreground border-muted/20"
+          {participants.map((p, idx) => {
+            const isDone = finishedPaths.some(fp => fp.participant.id === p.id);
+            return (
+              <div key={p.id} className={cn(
+                "flex flex-col items-center w-0 overflow-visible transition-all duration-500",
+                currentIndex === idx ? "scale-125 translate-y-[-5px]" : isDone ? "opacity-40" : "opacity-100"
               )}>
-                {p.name[0]}
+                <div className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center font-black text-xs border-2 transition-colors",
+                  currentIndex === idx ? "bg-primary text-white border-primary shadow-lg" : isDone ? "bg-muted text-muted-foreground border-muted" : "bg-white text-primary border-primary/20"
+                )}>
+                  {p.name[0]}
+                </div>
+                <div className="text-[10px] font-black mt-1 whitespace-nowrap bg-white/80 px-2 py-0.5 rounded-full">{p.name}</div>
               </div>
-              <div className="text-[10px] font-black mt-1 whitespace-nowrap bg-white/80 px-2 py-0.5 rounded-full">{p.name}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* The Ladder Grid */}
@@ -191,7 +209,7 @@ export const LadderGame = () => {
           <svg className="w-full h-full" viewBox={`0 0 ${participants.length - 1} 400`} preserveAspectRatio="none">
             {/* Vertical Lines */}
             {participants.map((_, i) => (
-              <line key={i} x1={i} y1="0" x2={i} y2="400" stroke="hsl(var(--primary)/0.15)" strokeWidth="0.08" strokeLinecap="round" />
+              <line key={i} x1={i} y1="0" x2={i} y2="400" stroke="hsl(var(--primary)/0.1)" strokeWidth="0.05" strokeLinecap="round" />
             ))}
             
             {/* Horizontal Bars */}
@@ -202,8 +220,8 @@ export const LadderGame = () => {
                 y1={bar.y} 
                 x2={bar.line + 1} 
                 y2={bar.y} 
-                stroke="hsl(var(--primary)/0.3)" 
-                strokeWidth="0.08" 
+                stroke="hsl(var(--primary)/0.2)" 
+                strokeWidth="0.05" 
                 strokeLinecap="round" 
               />
             ))}
@@ -214,8 +232,8 @@ export const LadderGame = () => {
                 key={i}
                 points={fp.path.map(p => `${p.x},${p.y}`).join(' ')}
                 fill="none"
-                stroke="hsl(var(--secondary)/0.5)"
-                strokeWidth="0.12"
+                stroke="hsl(var(--secondary)/0.4)"
+                strokeWidth="0.1"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -244,16 +262,19 @@ export const LadderGame = () => {
         {/* Result Labels at Bottom */}
         <div className="flex justify-between w-full relative z-10 px-2">
           {amounts.map((amt, idx) => {
-            const isHit = finishedPaths.some(fp => fp.endIndex === idx);
+            const pathResult = finishedPaths.find(fp => fp.endIndex === idx);
             return (
               <div key={idx} className="w-0 overflow-visible flex flex-col items-center gap-1 transition-all">
                 <div className={cn(
                   "px-2 py-1 min-w-[50px] text-center text-[10px] font-black rounded-lg border-2 transition-all",
-                  isHit ? "bg-secondary text-white border-secondary scale-110" : "bg-white text-primary border-primary/10"
+                  pathResult ? "bg-secondary text-white border-secondary scale-110" : "bg-white text-primary border-primary/10"
                 )}>
-                  {amt}
+                  {pathResult ? pathResult.participant.name : amt}
                 </div>
-                <div className={cn("w-3 h-3 rounded-full transition-colors", isHit ? "bg-secondary" : "bg-primary/20")} />
+                {pathResult && (
+                  <div className="text-[9px] font-black text-secondary-foreground mt-1">{amt}</div>
+                )}
+                <div className={cn("w-3 h-3 rounded-full transition-colors", pathResult ? "bg-secondary" : "bg-primary/20")} />
               </div>
             );
           })}
@@ -268,22 +289,18 @@ export const LadderGame = () => {
             className="w-full py-8 text-xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-2"
           >
             {animating ? (
-              <>이동 중...</>
+              <>이동 중 (눈 크게 뜨고 보세요! 👀)</>
             ) : (
               <>
-                <User size={24} /> {participants[currentIndex].name} 출발!
+                <User size={24} /> {participants[currentIndex].name} 출발하기!
               </>
             )}
           </Button>
         ) : (
-          <div className="text-center py-4 text-primary font-black animate-pulse">
-            결과를 계산하고 있습니다...
+          <div className="text-center py-4 text-primary font-black animate-pulse flex items-center justify-center gap-2">
+            <CheckCircle2 /> 결과 분석 및 보스 선정 중...
           </div>
         )}
-        
-        <Button variant="ghost" onClick={() => setStep('setup')} disabled={animating} className="w-full font-bold opacity-60">
-          결과 다시 설정하기
-        </Button>
       </div>
 
       <style jsx global>{`

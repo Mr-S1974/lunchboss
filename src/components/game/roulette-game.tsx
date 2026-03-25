@@ -2,11 +2,16 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useGame } from '../game-context';
+import { useGame, Participant } from '../game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Target } from 'lucide-react';
+import { Target, User, CheckCircle2 } from 'lucide-react';
+
+interface DartResult {
+  participant: Participant;
+  amount: string;
+}
 
 export const RouletteGame = () => {
   const { participants, setWinner } = useGame();
@@ -14,37 +19,74 @@ export const RouletteGame = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [isDartFlying, setIsDartFlying] = useState(false);
   const [amounts, setAmounts] = useState<string[]>([]);
+  
+  // Sequential Game State
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [results, setResults] = useState<DartResult[]>([]);
 
   useEffect(() => {
-    setAmounts(participants.map((_, i) => i === 0 ? "전액 결제" : (i * 10000).toLocaleString() + "원"));
+    // Initial suggested amounts
+    const initialAmts = participants.map((_, i) => i === 0 ? "50000" : (i * 10000).toString());
+    setAmounts(initialAmts);
   }, [participants.length]);
 
+  const parseAmount = (str: string) => {
+    const val = parseInt(str.replace(/[^0-9]/g, '')) || 0;
+    const boost = (str.includes("BOSS") || str.includes("결제")) ? 1000000 : 0;
+    return val + boost;
+  };
+
   const throwDart = () => {
-    if (isSpinning || isDartFlying) return;
+    if (isSpinning || isDartFlying || currentIndex >= participants.length) return;
     
     setIsSpinning(true);
-    // Slow, trackable rotation: 3-5 full spins over 4 seconds
+    // Slow, trackable rotation: 3-5 full spins over 3 seconds
     const extraSpins = 3 + Math.random() * 2;
     const finalRotation = rotation + extraSpins * 360;
     setRotation(finalRotation);
 
-    // After 3 seconds of spinning, throw the dart
+    // After spinning animation, throw the dart
     setTimeout(() => {
       setIsDartFlying(true);
       
-      // Determine winner after dart hits
       setTimeout(() => {
         setIsSpinning(false);
         setIsDartFlying(false);
         
         const sliceSize = 360 / participants.length;
+        // The pointer is at the top (0 deg). 
+        // We need to find which slice is currently under the pointer.
         const normalizedRotation = (finalRotation % 360);
-        // The needle/target is at the top (0 deg)
-        const winnerIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
+        const hitIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
         
-        // Randomly assign the amount hit to a participant (or just pick a winner)
-        const randomParticipant = participants[Math.floor(Math.random() * participants.length)];
-        setWinner(randomParticipant, amounts[winnerIndex]);
+        const currentResult: DartResult = {
+          participant: participants[currentIndex],
+          amount: amounts[hitIndex]
+        };
+
+        const updatedResults = [...results, currentResult];
+        setResults(updatedResults);
+        
+        const nextIdx = currentIndex + 1;
+        setCurrentIndex(nextIdx);
+
+        // If all participants have thrown
+        if (nextIdx === participants.length) {
+          setTimeout(() => {
+            let maxVal = -1;
+            let winnerRes = updatedResults[0];
+
+            updatedResults.forEach(res => {
+              const val = parseAmount(res.amount);
+              if (val > maxVal) {
+                maxVal = val;
+                winnerRes = res;
+              }
+            });
+
+            setWinner(winnerRes.participant, winnerRes.amount);
+          }, 1500);
+        }
       }, 800);
     }, 2500);
   };
@@ -53,7 +95,7 @@ export const RouletteGame = () => {
     <div className="flex flex-col items-center gap-8 h-full w-full max-w-md mx-auto">
       <div className="text-center space-y-1">
         <h3 className="text-2xl font-black text-secondary italic uppercase tracking-tighter">DART ROULETTE</h3>
-        <p className="text-xs font-bold text-muted-foreground">금액을 입력하고 다트를 던지세요!</p>
+        <p className="text-xs font-bold text-muted-foreground">전원이 다트를 던져 최고 금액을 뽑는 사람이 보스가 됩니다!</p>
       </div>
       
       <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
@@ -98,7 +140,7 @@ export const RouletteGame = () => {
                       newAmts[i] = e.target.value;
                       setAmounts(newAmts);
                     }}
-                    disabled={isSpinning}
+                    disabled={currentIndex > 0 || isSpinning}
                     className="w-16 h-8 text-[10px] font-black bg-white/20 border-none text-center text-white placeholder:text-white/50 focus:ring-0"
                   />
                 </div>
@@ -124,14 +166,40 @@ export const RouletteGame = () => {
         </div>
       </div>
 
+      {/* Result Status */}
+      <div className="w-full bg-white/40 p-4 rounded-2xl border-2 border-white">
+        <div className="text-xs font-bold text-muted-foreground mb-2">실시간 다트 현황</div>
+        <div className="flex flex-wrap gap-2">
+           {participants.map(p => {
+             const res = results.find(r => r.participant.id === p.id);
+             return (
+               <div key={p.id} className={cn(
+                 "px-2 py-1 rounded-full text-[10px] font-black border transition-all",
+                 res ? "bg-secondary/20 border-secondary text-secondary" : "bg-white/50 border-white text-muted-foreground"
+               )}>
+                 {p.name}: {res ? res.amount : '대기 중'}
+               </div>
+             );
+           })}
+        </div>
+      </div>
+
       <div className="w-full space-y-4">
-        <Button 
-          onClick={throwDart} 
-          disabled={isSpinning || isDartFlying}
-          className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3"
-        >
-          {isSpinning ? '조준 중...' : isDartFlying ? 'HIT!' : '다트 던지기!'}
-        </Button>
+        {currentIndex < participants.length ? (
+          <Button 
+            onClick={throwDart} 
+            disabled={isSpinning || isDartFlying}
+            className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3"
+          >
+            {isSpinning ? '회전 중...' : isDartFlying ? '발사!' : (
+              <><User /> {participants[currentIndex].name}님 다트 던지기!</>
+            )}
+          </Button>
+        ) : (
+          <div className="text-center py-4 text-secondary font-black animate-pulse flex items-center justify-center gap-2">
+            <CheckCircle2 /> 최고 금액 보스 선별 중...
+          </div>
+        )}
       </div>
 
       <style jsx>{`
