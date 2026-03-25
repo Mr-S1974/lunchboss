@@ -11,6 +11,11 @@ export interface Participant {
   character: CharacterType;
 }
 
+export interface GameResult {
+  participant: Participant;
+  amount: string;
+}
+
 export type GameMode = 'ladder' | 'roulette' | 'tap' | null;
 
 interface GameContextType {
@@ -18,48 +23,58 @@ interface GameContextType {
   gameMode: GameMode;
   winner: Participant | null;
   winningAmount: string | null;
-  addParticipant: (name: string, character: CharacterType) => void;
-  updateParticipant: (id: string, name: string) => void;
-  removeParticipant: (id: string) => void;
+  allResults: GameResult[];
+  setParticipants: (participants: Participant[]) => void;
+  updateParticipant: (id: string, name: string, character?: CharacterType) => void;
   setGameMode: (mode: GameMode) => void;
-  setWinner: (winner: Participant | null, amount?: string | null) => void;
+  setFinalResults: (results: GameResult[]) => void;
   resetGame: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export function GameProvider({ children }: { children: ReactNode }) {
-  // 초기 멤버 3명을 빈 칸으로 시작
-  const [participants, setParticipants] = useState<Participant[]>([
-    { id: 'initial-1', name: '', character: '텅장 사원' },
-    { id: 'initial-2', name: '', character: '법카 사냥꾼 대리' },
-    { id: 'initial-3', name: '', character: '커피 요정' },
-  ]);
+  const [participants, setParticipantsState] = useState<Participant[]>([]);
   const [gameMode, setGameMode] = useState<GameMode>(null);
   const [winner, setWinnerState] = useState<Participant | null>(null);
   const [winningAmount, setWinningAmount] = useState<string | null>(null);
+  const [allResults, setAllResults] = useState<GameResult[]>([]);
 
-  const addParticipant = (name: string, character: CharacterType) => {
-    setParticipants(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), name, character }]);
+  const setParticipants = (newParticipants: Participant[]) => {
+    setParticipantsState(newParticipants);
   };
 
-  const updateParticipant = (id: string, name: string) => {
-    setParticipants(prev => prev.map(p => p.id === id ? { ...p, name } : p));
+  const updateParticipant = (id: string, name: string, character?: CharacterType) => {
+    setParticipantsState(prev => prev.map(p => p.id === id ? { ...p, name, character: character || p.character } : p));
   };
 
-  const removeParticipant = (id: string) => {
-    setParticipants(prev => prev.filter(p => p.id !== id));
-  };
+  const setFinalResults = (results: GameResult[]) => {
+    setAllResults(results);
+    
+    // Find winner (max amount)
+    let maxVal = -1;
+    let currentWinner = results[0].participant;
+    let currentAmount = results[0].amount;
 
-  const setWinner = (winner: Participant | null, amount: string | null = null) => {
-    setWinnerState(winner);
-    setWinningAmount(amount);
+    results.forEach(res => {
+      const val = parseInt(res.amount.replace(/[^0-9]/g, '')) || 0;
+      if (val > maxVal) {
+        maxVal = val;
+        currentWinner = res.participant;
+        currentAmount = res.amount;
+      }
+    });
+
+    setWinnerState(currentWinner);
+    setWinningAmount(currentAmount);
   };
 
   const resetGame = () => {
     setGameMode(null);
     setWinnerState(null);
     setWinningAmount(null);
+    setAllResults([]);
+    setParticipantsState([]);
   };
 
   return (
@@ -68,11 +83,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
       gameMode,
       winner,
       winningAmount,
-      addParticipant,
+      allResults,
+      setParticipants,
       updateParticipant,
-      removeParticipant,
       setGameMode,
-      setWinner,
+      setFinalResults,
       resetGame
     }}>
       {children}

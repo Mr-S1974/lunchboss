@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useGame, Participant } from '../game-context';
+import { useGame, Participant, GameResult } from '../game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -21,8 +21,7 @@ interface ParticipantPath {
 }
 
 export const LadderGame = () => {
-  const { participants, setWinner } = useGame();
-  const validParticipants = participants.filter(p => p.name.trim() !== "");
+  const { participants, setFinalResults } = useGame();
   const [step, setStep] = useState<'setup' | 'playing'>('setup');
   const [amounts, setAmounts] = useState<string[]>([]);
   const [horizontalBars, setHorizontalBars] = useState<Bar[]>([]);
@@ -33,11 +32,11 @@ export const LadderGame = () => {
   const [activePath, setActivePath] = useState<{ x: number, y: number }[]>([]);
 
   useEffect(() => {
-    if (validParticipants.length > 0) {
-      setAmounts(validParticipants.map(() => ""));
+    if (participants.length > 0) {
+      setAmounts(participants.map(() => ""));
       
       const bars: Bar[] = [];
-      const numLines = validParticipants.length;
+      const numLines = participants.length;
       for (let i = 0; i < numLines - 1; i++) {
         const numBars = Math.floor(Math.random() * 3) + 3;
         for (let j = 0; j < numBars; j++) {
@@ -49,7 +48,7 @@ export const LadderGame = () => {
       }
       setHorizontalBars(bars.sort((a, b) => a.y - b.y));
     }
-  }, [validParticipants.length]);
+  }, [participants.length]);
 
   const tracePath = (startLine: number) => {
     let currentLine = startLine;
@@ -80,11 +79,6 @@ export const LadderGame = () => {
     return { path, endIndex: currentLine };
   };
 
-  const parseAmount = (str: string) => {
-    const val = parseInt(str.replace(/[^0-9]/g, '')) || 0;
-    return val;
-  };
-
   const formatWithCommas = (val: string) => {
     const numeric = val.replace(/[^0-9]/g, '');
     if (!numeric) return "";
@@ -92,7 +86,7 @@ export const LadderGame = () => {
   };
 
   const startNextParticipant = () => {
-    if (animating || currentIndex >= validParticipants.length) return;
+    if (animating || currentIndex >= participants.length) return;
     
     setAnimating(true);
     const { path, endIndex } = tracePath(currentIndex);
@@ -100,7 +94,7 @@ export const LadderGame = () => {
 
     setTimeout(() => {
       const newPathResult: ParticipantPath = { 
-        participant: validParticipants[currentIndex], 
+        participant: participants[currentIndex], 
         path, 
         endIndex,
         amount: amounts[endIndex]
@@ -114,20 +108,13 @@ export const LadderGame = () => {
       const nextIdx = currentIndex + 1;
       setCurrentIndex(nextIdx);
 
-      if (nextIdx === validParticipants.length) {
+      if (nextIdx === participants.length) {
         setTimeout(() => {
-          let maxVal = -1;
-          let winnerResult = updatedFinishedPaths[0];
-
-          updatedFinishedPaths.forEach(rp => {
-            const val = parseAmount(rp.amount);
-            if (val > maxVal) {
-              maxVal = val;
-              winnerResult = rp;
-            }
-          });
-
-          setWinner(winnerResult.participant, formatWithCommas(winnerResult.amount));
+          const finalResults: GameResult[] = updatedFinishedPaths.map(rp => ({
+            participant: rp.participant,
+            amount: rp.amount
+          }));
+          setFinalResults(finalResults);
         }, 1500);
       }
     }, 2500);
@@ -177,15 +164,15 @@ export const LadderGame = () => {
       <div className="text-center space-y-1">
         <h3 className="text-2xl font-black text-primary italic">LADDER RUNNING</h3>
         <p className="text-xs font-bold text-muted-foreground">
-          {currentIndex < validParticipants.length 
-            ? `${validParticipants[currentIndex].name}님이 출발할 차례입니다!` 
+          {currentIndex < participants.length 
+            ? `${participants[currentIndex].name}님이 출발할 차례입니다!` 
             : "모든 참가자가 도착했습니다! 결과를 확인합니다."}
         </p>
       </div>
       
       <div className="relative w-full h-[480px] bg-white/50 backdrop-blur-sm rounded-[3rem] border-4 border-white shadow-inner p-10 flex flex-col justify-between overflow-hidden">
         <div className="flex justify-between w-full relative z-10 px-2">
-          {validParticipants.map((p, idx) => {
+          {participants.map((p, idx) => {
             const isDone = finishedPaths.some(fp => fp.participant.id === p.id);
             return (
               <div key={p.id} className={cn(
@@ -205,8 +192,8 @@ export const LadderGame = () => {
         </div>
 
         <div className="absolute inset-x-12 top-24 bottom-24">
-          <svg className="w-full h-full" viewBox={`0 0 ${validParticipants.length - 1} 400`} preserveAspectRatio="none">
-            {validParticipants.map((_, i) => (
+          <svg className="w-full h-full" viewBox={`0 0 ${participants.length - 1} 400`} preserveAspectRatio="none">
+            {participants.map((_, i) => (
               <line key={i} x1={i} y1="0" x2={i} y2="400" stroke="hsl(var(--primary)/0.1)" strokeWidth="0.05" strokeLinecap="round" />
             ))}
             {horizontalBars.map((bar, i) => (
@@ -241,9 +228,9 @@ export const LadderGame = () => {
       </div>
 
       <div className="w-full space-y-3">
-        {currentIndex < validParticipants.length ? (
+        {currentIndex < participants.length ? (
           <Button onClick={startNextParticipant} disabled={animating} className="w-full py-8 text-xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-2">
-            {animating ? <>이동 중 (눈 크게 뜨고 보세요! 👀)</> : <><User size={24} /> {validParticipants[currentIndex].name} 출발하기!</>}
+            {animating ? <>이동 중 (눈 크게 뜨고 보세요! 👀)</> : <><User size={24} /> {participants[currentIndex].name} 출발하기!</>}
           </Button>
         ) : (
           <div className="text-center py-4 text-primary font-black animate-pulse flex items-center justify-center gap-2">

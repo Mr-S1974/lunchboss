@@ -2,20 +2,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useGame, Participant } from '../game-context';
+import { useGame, Participant, GameResult } from '../game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Target, User, CheckCircle2, Play } from 'lucide-react';
 
-interface DartResult {
-  participant: Participant;
-  amount: string;
-}
-
 export const RouletteGame = () => {
-  const { participants, setWinner } = useGame();
-  const validParticipants = participants.filter(p => p.name.trim() !== "");
+  const { participants, setFinalResults } = useGame();
   const [step, setStep] = useState<'setup' | 'playing'>('setup');
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -23,18 +17,13 @@ export const RouletteGame = () => {
   const [amounts, setAmounts] = useState<string[]>([]);
   
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [results, setResults] = useState<DartResult[]>([]);
+  const [results, setResults] = useState<GameResult[]>([]);
 
   useEffect(() => {
-    if (validParticipants.length > 0) {
-      setAmounts(validParticipants.map(() => ""));
+    if (participants.length > 0) {
+      setAmounts(participants.map(() => ""));
     }
-  }, [validParticipants.length]);
-
-  const parseAmount = (str: string) => {
-    const val = parseInt(str.replace(/[^0-9]/g, '')) || 0;
-    return val;
-  };
+  }, [participants.length]);
 
   const formatWithCommas = (val: string) => {
     const numeric = val.replace(/[^0-9]/g, '');
@@ -43,7 +32,7 @@ export const RouletteGame = () => {
   };
 
   const throwDart = () => {
-    if (isSpinning || isDartFlying || currentIndex >= validParticipants.length) return;
+    if (isSpinning || isDartFlying || currentIndex >= participants.length) return;
     
     setIsSpinning(true);
     const extraSpins = 2 + Math.random() * 1;
@@ -57,12 +46,12 @@ export const RouletteGame = () => {
         setIsSpinning(false);
         setIsDartFlying(false);
         
-        const sliceSize = 360 / validParticipants.length;
+        const sliceSize = 360 / participants.length;
         const normalizedRotation = (finalRotation % 360);
         const hitIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
         
-        const currentResult: DartResult = {
-          participant: validParticipants[currentIndex],
+        const currentResult: GameResult = {
+          participant: participants[currentIndex],
           amount: amounts[hitIndex]
         };
 
@@ -72,20 +61,9 @@ export const RouletteGame = () => {
         const nextIdx = currentIndex + 1;
         setCurrentIndex(nextIdx);
 
-        if (nextIdx === validParticipants.length) {
+        if (nextIdx === participants.length) {
           setTimeout(() => {
-            let maxVal = -1;
-            let winnerRes = updatedResults[0];
-
-            updatedResults.forEach(res => {
-              const val = parseAmount(res.amount);
-              if (val > maxVal) {
-                maxVal = val;
-                winnerRes = res;
-              }
-            });
-
-            setWinner(winnerRes.participant, formatWithCommas(winnerRes.amount));
+            setFinalResults(updatedResults);
           }, 1500);
         }
       }, 800);
@@ -136,8 +114,8 @@ export const RouletteGame = () => {
       <div className="text-center space-y-1">
         <h3 className="text-2xl font-black text-secondary italic uppercase tracking-tighter">복불복 룰렛</h3>
         <p className="text-xs font-bold text-muted-foreground">
-          {currentIndex < validParticipants.length 
-            ? `${validParticipants[currentIndex].name}님이 다트를 던질 차례입니다!` 
+          {currentIndex < participants.length 
+            ? `${participants[currentIndex].name}님이 다트를 던질 차례입니다!` 
             : "모든 다트 결과 분석 중..."}
         </p>
       </div>
@@ -153,8 +131,8 @@ export const RouletteGame = () => {
           className={cn("w-full h-full rounded-full border-[12px] border-white shadow-2xl overflow-hidden relative transition-transform cubic-bezier(0.2, 0, 0.2, 1)")}
           style={{ transform: `rotate(${rotation}deg)`, transitionDuration: '4000ms' }}
         >
-          {validParticipants.map((p, i) => {
-            const angle = 360 / validParticipants.length;
+          {participants.map((p, i) => {
+            const angle = 360 / participants.length;
             const rotate = i * angle;
             return (
               <div key={i} className="absolute w-full h-full origin-center" style={{ transform: `rotate(${rotate}deg)`, clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.tan((angle * Math.PI) / 360)}% 0%)`, backgroundColor: i % 2 === 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
@@ -181,7 +159,7 @@ export const RouletteGame = () => {
       <div className="w-full bg-white/40 p-4 rounded-2xl border-2 border-white">
         <div className="text-xs font-bold text-muted-foreground mb-2">실시간 다트 현황</div>
         <div className="flex flex-wrap gap-2">
-           {validParticipants.map(p => {
+           {participants.map(p => {
              const res = results.find(r => r.participant.id === p.id);
              return (
                <div key={p.id} className={cn("px-2 py-1 rounded-full text-[10px] font-black border transition-all", res ? "bg-secondary/20 border-secondary text-secondary" : "bg-white/50 border-white text-muted-foreground")}>
@@ -193,9 +171,9 @@ export const RouletteGame = () => {
       </div>
 
       <div className="w-full space-y-4">
-        {currentIndex < validParticipants.length ? (
+        {currentIndex < participants.length ? (
           <Button onClick={throwDart} disabled={isSpinning || isDartFlying} className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3">
-            {isSpinning ? '회전 중 (눈 크게 뜨고 보세요! 👀)' : isDartFlying ? '발사!' : <><User /> {validParticipants[currentIndex].name}님 다트 던지기!</>}
+            {isSpinning ? '회전 중 (눈 크게 뜨고 보세요! 👀)' : isDartFlying ? '발사!' : <><User /> {participants[currentIndex].name}님 다트 던지기!</>}
           </Button>
         ) : (
           <div className="text-center py-4 text-secondary font-black animate-pulse flex items-center justify-center gap-2">
