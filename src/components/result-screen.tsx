@@ -87,7 +87,7 @@ export const ResultScreen = () => {
                   <Wallet size={20} />
                   <span>결제할 금액</span>
                 </div>
-                <div className="text-3xl font-black text-accent">{winningAmount}</div>
+                <div className="text-3xl font-black text-accent">{winningAmount}원</div>
               </div>
             )}
 

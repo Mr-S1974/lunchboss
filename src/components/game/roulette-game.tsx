@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -14,39 +15,41 @@ interface DartResult {
 
 export const RouletteGame = () => {
   const { participants, setWinner } = useGame();
+  const validParticipants = participants.filter(p => p.name.trim() !== "");
   const [step, setStep] = useState<'setup' | 'playing'>('setup');
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [isDartFlying, setIsDartFlying] = useState(false);
   const [amounts, setAmounts] = useState<string[]>([]);
   
-  // Sequential Game State
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<DartResult[]>([]);
 
   useEffect(() => {
-    if (participants.length > 0) {
-      const initialAmts = participants.map((_, i) => i === 0 ? "50000" : (i * 10000).toString());
-      setAmounts(initialAmts);
+    if (validParticipants.length > 0) {
+      setAmounts(validParticipants.map(() => ""));
     }
-  }, [participants.length]);
+  }, [validParticipants.length]);
 
   const parseAmount = (str: string) => {
     const val = parseInt(str.replace(/[^0-9]/g, '')) || 0;
-    const boost = (str.includes("BOSS") || str.includes("결제")) ? 1000000 : 0;
-    return val + boost;
+    return val;
+  };
+
+  const formatWithCommas = (val: string) => {
+    const numeric = val.replace(/[^0-9]/g, '');
+    if (!numeric) return "";
+    return Number(numeric).toLocaleString();
   };
 
   const throwDart = () => {
-    if (isSpinning || isDartFlying || currentIndex >= participants.length) return;
+    if (isSpinning || isDartFlying || currentIndex >= validParticipants.length) return;
     
     setIsSpinning(true);
-    // Slow, trackable rotation: 2-3 full spins over 4 seconds for better visibility
     const extraSpins = 2 + Math.random() * 1;
     const finalRotation = rotation + extraSpins * 360;
     setRotation(finalRotation);
 
-    // Wait for the wheel to slow down before throwing the dart
     setTimeout(() => {
       setIsDartFlying(true);
       
@@ -54,13 +57,12 @@ export const RouletteGame = () => {
         setIsSpinning(false);
         setIsDartFlying(false);
         
-        const sliceSize = 360 / participants.length;
-        // The pointer is at the top (0 deg). 
+        const sliceSize = 360 / validParticipants.length;
         const normalizedRotation = (finalRotation % 360);
         const hitIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
         
         const currentResult: DartResult = {
-          participant: participants[currentIndex],
+          participant: validParticipants[currentIndex],
           amount: amounts[hitIndex]
         };
 
@@ -70,7 +72,7 @@ export const RouletteGame = () => {
         const nextIdx = currentIndex + 1;
         setCurrentIndex(nextIdx);
 
-        if (nextIdx === participants.length) {
+        if (nextIdx === validParticipants.length) {
           setTimeout(() => {
             let maxVal = -1;
             let winnerRes = updatedResults[0];
@@ -83,36 +85,36 @@ export const RouletteGame = () => {
               }
             });
 
-            setWinner(winnerRes.participant, winnerRes.amount);
+            setWinner(winnerRes.participant, formatWithCommas(winnerRes.amount));
           }, 1500);
         }
       }, 800);
-    }, 4000); // Wait for the 4s rotation
+    }, 4000);
   };
 
   if (step === 'setup') {
     return (
       <div className="flex flex-col gap-6 w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4">
         <div className="text-center space-y-2">
-          <h3 className="text-3xl font-black text-secondary italic">ROULETTE SETUP</h3>
+          <h3 className="text-3xl font-black text-secondary italic">복불복 룰렛 SETUP</h3>
           <p className="text-sm font-bold text-muted-foreground">룰렛의 각 칸에 들어갈 금액을 정해주세요!</p>
         </div>
 
         <div className="grid gap-3 bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-4 border-white shadow-xl">
           {amounts.map((amt, i) => (
             <div key={i} className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center font-black text-secondary border-2 border-secondary/20">
+              <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center font-black text-secondary border-2 border-secondary/20 shrink-0">
                 {i + 1}
               </div>
               <Input
                 value={amt}
                 onChange={(e) => {
                   const newAmts = [...amounts];
-                  newAmts[i] = e.target.value;
+                  newAmts[i] = formatWithCommas(e.target.value);
                   setAmounts(newAmts);
                 }}
                 className="h-12 rounded-xl border-2 border-secondary/10 font-bold focus:ring-secondary bg-white"
-                placeholder="금액 입력"
+                placeholder="금액(원) 입력"
               />
             </div>
           ))}
@@ -120,9 +122,10 @@ export const RouletteGame = () => {
 
         <Button 
           onClick={() => setStep('playing')}
+          disabled={amounts.some(a => !a)}
           className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-2"
         >
-          <Play fill="currentColor" /> 룰렛 준비 완료!
+          <Play fill="currentColor" /> 복불복 룰렛 준비 완료!
         </Button>
       </div>
     );
@@ -131,67 +134,42 @@ export const RouletteGame = () => {
   return (
     <div className="flex flex-col items-center gap-8 h-full w-full max-w-md mx-auto">
       <div className="text-center space-y-1">
-        <h3 className="text-2xl font-black text-secondary italic uppercase tracking-tighter">DART ROULETTE</h3>
+        <h3 className="text-2xl font-black text-secondary italic uppercase tracking-tighter">복불복 룰렛</h3>
         <p className="text-xs font-bold text-muted-foreground">
-          {currentIndex < participants.length 
-            ? `${participants[currentIndex].name}님이 다트를 던질 차례입니다!` 
+          {currentIndex < validParticipants.length 
+            ? `${validParticipants[currentIndex].name}님이 다트를 던질 차례입니다!` 
             : "모든 다트 결과 분석 중..."}
         </p>
       </div>
       
       <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
-        {/* Target Pointer */}
         <div className="absolute top-[-30px] left-1/2 -translate-x-1/2 z-30 animate-bounce">
           <div className="w-8 h-8 rounded-full bg-accent border-4 border-white shadow-lg flex items-center justify-center">
              <div className="w-2 h-2 rounded-full bg-white" />
           </div>
         </div>
         
-        {/* Roulette Wheel */}
         <div 
-          className={cn(
-            "w-full h-full rounded-full border-[12px] border-white shadow-2xl overflow-hidden relative transition-transform cubic-bezier(0.2, 0, 0.2, 1)",
-          )}
-          style={{ 
-            transform: `rotate(${rotation}deg)`,
-            transitionDuration: '4000ms'
-          }}
+          className={cn("w-full h-full rounded-full border-[12px] border-white shadow-2xl overflow-hidden relative transition-transform cubic-bezier(0.2, 0, 0.2, 1)")}
+          style={{ transform: `rotate(${rotation}deg)`, transitionDuration: '4000ms' }}
         >
-          {participants.map((p, i) => {
-            const angle = 360 / participants.length;
+          {validParticipants.map((p, i) => {
+            const angle = 360 / validParticipants.length;
             const rotate = i * angle;
             return (
-              <div 
-                key={i}
-                className="absolute w-full h-full origin-center"
-                style={{ 
-                  transform: `rotate(${rotate}deg)`,
-                  clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.tan((angle * Math.PI) / 360)}% 0%)`,
-                  backgroundColor: i % 2 === 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))'
-                }}
-              >
-                <div 
-                  className="absolute left-1/2 top-10 -translate-x-1/2 flex flex-col items-center gap-1"
-                  style={{ transform: `rotate(${angle / 2}deg)` }}
-                >
-                  <div className="text-[10px] font-black text-white px-2 py-1 bg-black/20 rounded-md">
-                    {amounts[i]}
-                  </div>
+              <div key={i} className="absolute w-full h-full origin-center" style={{ transform: `rotate(${rotate}deg)`, clipPath: `polygon(50% 50%, 50% 0%, ${50 + 50 * Math.tan((angle * Math.PI) / 360)}% 0%)`, backgroundColor: i % 2 === 0 ? 'hsl(var(--primary))' : 'hsl(var(--secondary))' }}>
+                <div className="absolute left-1/2 top-10 -translate-x-1/2 flex flex-col items-center gap-1" style={{ transform: `rotate(${angle / 2}deg)` }}>
+                  <div className="text-[10px] font-black text-white px-2 py-1 bg-black/20 rounded-md">{amounts[i]}</div>
                 </div>
               </div>
             );
           })}
-          {/* Inner Circle */}
           <div className="absolute inset-[35%] rounded-full bg-white shadow-inner flex items-center justify-center z-10 border-4 border-primary/10">
              <Target className="text-primary opacity-20" size={40} />
           </div>
         </div>
 
-        {/* Dart Animation */}
-        <div className={cn(
-          "absolute bottom-[-100px] transition-all duration-700 ease-out z-40",
-          isDartFlying ? "bottom-[40%] scale-50 rotate-[45deg] opacity-100" : "opacity-0 translate-y-20"
-        )}>
+        <div className={cn("absolute bottom-[-100px] transition-all duration-700 ease-out z-40", isDartFlying ? "bottom-[40%] scale-50 rotate-[45deg] opacity-100" : "opacity-0 translate-y-20")}>
           <div className="relative">
             <div className="w-2 h-24 bg-zinc-800 rounded-full" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-12 bg-accent clip-path-dart-tail" />
@@ -200,17 +178,13 @@ export const RouletteGame = () => {
         </div>
       </div>
 
-      {/* Result Status */}
       <div className="w-full bg-white/40 p-4 rounded-2xl border-2 border-white">
         <div className="text-xs font-bold text-muted-foreground mb-2">실시간 다트 현황</div>
         <div className="flex flex-wrap gap-2">
-           {participants.map(p => {
+           {validParticipants.map(p => {
              const res = results.find(r => r.participant.id === p.id);
              return (
-               <div key={p.id} className={cn(
-                 "px-2 py-1 rounded-full text-[10px] font-black border transition-all",
-                 res ? "bg-secondary/20 border-secondary text-secondary" : "bg-white/50 border-white text-muted-foreground"
-               )}>
+               <div key={p.id} className={cn("px-2 py-1 rounded-full text-[10px] font-black border transition-all", res ? "bg-secondary/20 border-secondary text-secondary" : "bg-white/50 border-white text-muted-foreground")}>
                  {p.name}: {res ? res.amount : '대기 중'}
                </div>
              );
@@ -219,15 +193,9 @@ export const RouletteGame = () => {
       </div>
 
       <div className="w-full space-y-4">
-        {currentIndex < participants.length ? (
-          <Button 
-            onClick={throwDart} 
-            disabled={isSpinning || isDartFlying}
-            className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3"
-          >
-            {isSpinning ? '회전 중 (눈 크게 뜨고 보세요! 👀)' : isDartFlying ? '발사!' : (
-              <><User /> {participants[currentIndex].name}님 다트 던지기!</>
-            )}
+        {currentIndex < validParticipants.length ? (
+          <Button onClick={throwDart} disabled={isSpinning || isDartFlying} className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3">
+            {isSpinning ? '회전 중 (눈 크게 뜨고 보세요! 👀)' : isDartFlying ? '발사!' : <><User /> {validParticipants[currentIndex].name}님 다트 던지기!</>}
           </Button>
         ) : (
           <div className="text-center py-4 text-secondary font-black animate-pulse flex items-center justify-center gap-2">
@@ -236,11 +204,7 @@ export const RouletteGame = () => {
         )}
       </div>
 
-      <style jsx>{`
-        .clip-path-dart-tail {
-          clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
-      `}</style>
+      <style jsx>{` .clip-path-dart-tail { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); } `}</style>
     </div>
   );
 };

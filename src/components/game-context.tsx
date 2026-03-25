@@ -19,6 +19,7 @@ interface GameContextType {
   winner: Participant | null;
   winningAmount: string | null;
   addParticipant: (name: string, character: CharacterType) => void;
+  updateParticipant: (id: string, name: string) => void;
   removeParticipant: (id: string) => void;
   setGameMode: (mode: GameMode) => void;
   setWinner: (winner: Participant | null, amount?: string | null) => void;
@@ -28,10 +29,11 @@ interface GameContextType {
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  // 초기 멤버 3명을 빈 칸으로 시작
   const [participants, setParticipants] = useState<Participant[]>([
-    { id: '1', name: '김철수', character: '텅장 사원' },
-    { id: '2', name: '이영희', character: '법카 장전 과장' },
-    { id: '3', name: '박대리', character: '법카 사냥꾼 대리' },
+    { id: 'initial-1', name: '', character: '텅장 사원' },
+    { id: 'initial-2', name: '', character: '법카 사냥꾼 대리' },
+    { id: 'initial-3', name: '', character: '커피 요정' },
   ]);
   const [gameMode, setGameMode] = useState<GameMode>(null);
   const [winner, setWinnerState] = useState<Participant | null>(null);
@@ -39,6 +41,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const addParticipant = (name: string, character: CharacterType) => {
     setParticipants(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), name, character }]);
+  };
+
+  const updateParticipant = (id: string, name: string) => {
+    setParticipants(prev => prev.map(p => p.id === id ? { ...p, name } : p));
   };
 
   const removeParticipant = (id: string) => {
@@ -63,6 +69,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       winner,
       winningAmount,
       addParticipant,
+      updateParticipant,
       removeParticipant,
       setGameMode,
       setWinner,
