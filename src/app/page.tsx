@@ -47,7 +47,6 @@ const MainScreen = () => {
           </Button>
         </div>
         
-        {/* Mock Ad Banner */}
         <div className="absolute bottom-6 left-6 right-6 h-16 bg-white/40 backdrop-blur-md border border-white/50 rounded-2xl flex items-center justify-between px-6 overflow-hidden shadow-sm">
            <div className="text-xs text-left">
              <div className="font-bold text-primary">AD: 오늘은 샐러드 어때요?</div>
@@ -79,7 +78,7 @@ const MainScreen = () => {
               <Button className="h-24 text-xl font-bold gap-4 border-4 border-secondary/10 bg-white hover:bg-secondary hover:text-white transition-all card-hover group" variant="outline" onClick={() => handleGameSelect('roulette')}>
                  <span className="text-5xl group-hover:scale-125 transition-transform">🎡</span>
                  <div className="text-left">
-                   <div>영수증 룰렛</div>
+                   <div>복불복 룰렛</div>
                    <div className="text-xs font-normal opacity-70">돌아가는 행운의 영수증</div>
                  </div>
               </Button>

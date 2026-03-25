@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,7 +5,7 @@ import { useGame, Participant } from '../game-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { Target, User, CheckCircle2 } from 'lucide-react';
+import { Target, User, CheckCircle2, Play } from 'lucide-react';
 
 interface DartResult {
   participant: Participant;
@@ -15,6 +14,7 @@ interface DartResult {
 
 export const RouletteGame = () => {
   const { participants, setWinner } = useGame();
+  const [step, setStep] = useState<'setup' | 'playing'>('setup');
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [isDartFlying, setIsDartFlying] = useState(false);
@@ -25,9 +25,10 @@ export const RouletteGame = () => {
   const [results, setResults] = useState<DartResult[]>([]);
 
   useEffect(() => {
-    // Initial suggested amounts
-    const initialAmts = participants.map((_, i) => i === 0 ? "50000" : (i * 10000).toString());
-    setAmounts(initialAmts);
+    if (participants.length > 0) {
+      const initialAmts = participants.map((_, i) => i === 0 ? "50000" : (i * 10000).toString());
+      setAmounts(initialAmts);
+    }
   }, [participants.length]);
 
   const parseAmount = (str: string) => {
@@ -40,12 +41,12 @@ export const RouletteGame = () => {
     if (isSpinning || isDartFlying || currentIndex >= participants.length) return;
     
     setIsSpinning(true);
-    // Slow, trackable rotation: 3-5 full spins over 3 seconds
-    const extraSpins = 3 + Math.random() * 2;
+    // Slow, trackable rotation: 2-3 full spins over 4 seconds for better visibility
+    const extraSpins = 2 + Math.random() * 1;
     const finalRotation = rotation + extraSpins * 360;
     setRotation(finalRotation);
 
-    // After spinning animation, throw the dart
+    // Wait for the wheel to slow down before throwing the dart
     setTimeout(() => {
       setIsDartFlying(true);
       
@@ -55,7 +56,6 @@ export const RouletteGame = () => {
         
         const sliceSize = 360 / participants.length;
         // The pointer is at the top (0 deg). 
-        // We need to find which slice is currently under the pointer.
         const normalizedRotation = (finalRotation % 360);
         const hitIndex = Math.floor(((360 - normalizedRotation) % 360) / sliceSize);
         
@@ -70,7 +70,6 @@ export const RouletteGame = () => {
         const nextIdx = currentIndex + 1;
         setCurrentIndex(nextIdx);
 
-        // If all participants have thrown
         if (nextIdx === participants.length) {
           setTimeout(() => {
             let maxVal = -1;
@@ -88,14 +87,56 @@ export const RouletteGame = () => {
           }, 1500);
         }
       }, 800);
-    }, 2500);
+    }, 4000); // Wait for the 4s rotation
   };
+
+  if (step === 'setup') {
+    return (
+      <div className="flex flex-col gap-6 w-full max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4">
+        <div className="text-center space-y-2">
+          <h3 className="text-3xl font-black text-secondary italic">ROULETTE SETUP</h3>
+          <p className="text-sm font-bold text-muted-foreground">룰렛의 각 칸에 들어갈 금액을 정해주세요!</p>
+        </div>
+
+        <div className="grid gap-3 bg-white/60 backdrop-blur-md p-6 rounded-[2.5rem] border-4 border-white shadow-xl">
+          {amounts.map((amt, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center font-black text-secondary border-2 border-secondary/20">
+                {i + 1}
+              </div>
+              <Input
+                value={amt}
+                onChange={(e) => {
+                  const newAmts = [...amounts];
+                  newAmts[i] = e.target.value;
+                  setAmounts(newAmts);
+                }}
+                className="h-12 rounded-xl border-2 border-secondary/10 font-bold focus:ring-secondary bg-white"
+                placeholder="금액 입력"
+              />
+            </div>
+          ))}
+        </div>
+
+        <Button 
+          onClick={() => setStep('playing')}
+          className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-2"
+        >
+          <Play fill="currentColor" /> 룰렛 준비 완료!
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center gap-8 h-full w-full max-w-md mx-auto">
       <div className="text-center space-y-1">
         <h3 className="text-2xl font-black text-secondary italic uppercase tracking-tighter">DART ROULETTE</h3>
-        <p className="text-xs font-bold text-muted-foreground">전원이 다트를 던져 최고 금액을 뽑는 사람이 보스가 됩니다!</p>
+        <p className="text-xs font-bold text-muted-foreground">
+          {currentIndex < participants.length 
+            ? `${participants[currentIndex].name}님이 다트를 던질 차례입니다!` 
+            : "모든 다트 결과 분석 중..."}
+        </p>
       </div>
       
       <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
@@ -133,16 +174,9 @@ export const RouletteGame = () => {
                   className="absolute left-1/2 top-10 -translate-x-1/2 flex flex-col items-center gap-1"
                   style={{ transform: `rotate(${angle / 2}deg)` }}
                 >
-                  <Input
-                    value={amounts[i]}
-                    onChange={(e) => {
-                      const newAmts = [...amounts];
-                      newAmts[i] = e.target.value;
-                      setAmounts(newAmts);
-                    }}
-                    disabled={currentIndex > 0 || isSpinning}
-                    className="w-16 h-8 text-[10px] font-black bg-white/20 border-none text-center text-white placeholder:text-white/50 focus:ring-0"
-                  />
+                  <div className="text-[10px] font-black text-white px-2 py-1 bg-black/20 rounded-md">
+                    {amounts[i]}
+                  </div>
                 </div>
               </div>
             );
@@ -191,7 +225,7 @@ export const RouletteGame = () => {
             disabled={isSpinning || isDartFlying}
             className="w-full py-8 text-2xl font-black hero-gradient soft-glow rounded-[2rem] flex gap-3"
           >
-            {isSpinning ? '회전 중...' : isDartFlying ? '발사!' : (
+            {isSpinning ? '회전 중 (눈 크게 뜨고 보세요! 👀)' : isDartFlying ? '발사!' : (
               <><User /> {participants[currentIndex].name}님 다트 던지기!</>
             )}
           </Button>
