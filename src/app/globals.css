@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 45 100% 98%;
-    --foreground: 20 20% 15%;
+    --background: 38 100% 97%;
+    --foreground: 210 28% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 20 20% 15%;
+    --card-foreground: 210 28% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 20% 15%;
-    --primary: 35 100% 55%;
+    --popover-foreground: 210 28% 15%;
+    --primary: 24 95% 57%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 142 70% 45%;
+    --secondary: 156 55% 42%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 45 30% 90%;
-    --muted-foreground: 20 10% 40%;
-    --accent: 330 80% 60%;
+    --muted: 36 40% 92%;
+    --muted-foreground: 210 12% 40%;
+    --accent: 12 88% 62%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 35 50% 90%;
-    --input: 35 50% 90%;
-    --ring: 35 100% 55%;
+    --border: 35 45% 88%;
+    --input: 35 45% 88%;
+    --ring: 24 95% 57%;
     --radius: 1.25rem;
   }
 }
@@ -31,40 +31,39 @@
   * {
     @apply border-border;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-body;
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(35, 100%, 85%, 0.5) 0, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(142, 70%, 85%, 0.5) 0, transparent 50%);
+    background-image:
+      radial-gradient(circle at top left, rgba(255, 191, 117, 0.32), transparent 32%),
+      radial-gradient(circle at top right, rgba(101, 205, 173, 0.2), transparent 28%),
+      linear-gradient(180deg, #fffef8 0%, #fff8ee 52%, #fffdf9 100%);
+    min-height: 100vh;
   }
-}
-
-.pixel-font {
-  font-family: 'Courier New', Courier, monospace;
 }
 
 @keyframes float {
   0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(5deg); }
+  50% { transform: translateY(-12px) rotate(4deg); }
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
 .animate-float {
-  animation: float 5s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
 .soft-glow {
-  box-shadow: 0 10px 30px hsla(var(--primary) / 0.2);
-}
-
-.sunny-text {
-  text-shadow: 2px 2px 0px hsla(var(--primary) / 0.2);
+  box-shadow: 0 18px 40px rgba(245, 132, 50, 0.24);
 }
 
 .hero-gradient {
-  background: linear-gradient(135deg, hsl(var(--primary)), #ff8c00);
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
 }
 
 .card-hover {
-  @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-xl;
+  @apply transition-all duration-300 hover:scale-[1.01] hover:shadow-xl;
 }

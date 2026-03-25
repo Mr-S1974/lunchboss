@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useGame } from '../game-context';
 import { Button } from '@/components/ui/button';
 import { Heart, Bomb } from 'lucide-react';
@@ -23,36 +23,38 @@ export const TapSurvival = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 h-full text-center">
-      <h3 className="text-xl font-bold neon-text">지목 셔플</h3>
-      <p className="text-sm text-muted-foreground">터치 서바이벌! 누가 남을까요?</p>
+    <div className="mx-auto flex h-full w-full max-w-xl min-w-0 flex-col items-center gap-6 overflow-hidden text-center">
+      <div className="w-full max-w-lg px-2">
+        <h3 className="font-headline text-2xl font-bold text-foreground">지목 셔플</h3>
+        <p className="mt-2 break-keep text-sm leading-6 text-muted-foreground">터치 서바이벌 방식으로 마지막 결과를 정합니다.</p>
+      </div>
 
-      <div className="relative w-full max-w-sm h-80 flex flex-wrap justify-center content-center gap-4">
+      <div className="relative flex h-80 w-full max-w-sm flex-wrap content-center justify-center gap-4 overflow-hidden rounded-[2rem] border border-white/70 bg-white/45 px-4 py-6 backdrop-blur-sm">
         {participants.map((p, idx) => (
-          <div 
-            key={p.id} 
-            className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${shuffling ? 'animate-bounce' : ''} ${showBlast ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
-            style={{ animationDelay: `${idx * 0.1}s`, backgroundColor: `hsl(var(--primary) / ${0.3 + (idx * 0.1)})` }}
+          <div
+            key={p.id}
+            className={(shuffling ? 'animate-bounce ' : '') + (showBlast ? 'scale-0 opacity-0 ' : 'scale-100 opacity-100 ') + 'flex h-16 w-16 items-center justify-center rounded-full transition-all duration-300'}
+            style={{ animationDelay: String(idx * 0.1) + 's', backgroundColor: 'hsl(var(--primary) / ' + String(0.3 + idx * 0.1) + ')' }}
           >
-            <Heart className="text-white fill-white" size={24} />
+            <Heart className="fill-white text-white" size={24} />
           </div>
         ))}
 
         {showBlast && (
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="animate-ping bg-secondary w-32 h-32 rounded-full flex items-center justify-center">
+          <div className="absolute inset-0 z-10 flex items-center justify-center">
+            <div className="flex h-32 w-32 items-center justify-center rounded-full bg-secondary animate-ping">
               <Bomb size={64} className="text-black" />
             </div>
             <div className="absolute inset-0 flex items-center justify-center">
-               <div className="text-4xl font-black text-secondary animate-bounce">꽝!!</div>
+              <div className="text-4xl font-extrabold text-secondary animate-bounce">꽝</div>
             </div>
           </div>
         )}
       </div>
 
-      {!shuffling && !showBlast && (
-        <Button onClick={startShuffle} className="px-12 py-6 text-xl font-bold hero-gradient neon-glow">
-          동시에 탭!
+      {shuffling === false && showBlast === false && (
+        <Button onClick={startShuffle} className="hero-gradient soft-glow rounded-[1.6rem] px-12 py-6 text-xl font-bold">
+          동시에 탭
         </Button>
       )}
     </div>
