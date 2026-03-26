@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useGame } from "./game-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Crown, Share2, RefreshCw, PartyPopper, Wallet, ListChecks, Home } from "lucide-react";
+import { Crown, RefreshCw, PartyPopper, Wallet, ListChecks, Home } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
@@ -37,7 +37,7 @@ const COMMENDATIONS: Record<string, string[]> = {
     "커피에 이어 점심까지 챙기는 진정한 오피스 요정이 되셨습니다.",
     "팀 분위기를 부드럽게 살리는 오늘의 결제 요정입니다.",
   ],
-  "default": [
+  default: [
     "오늘 점심은 이분이 분위기까지 책임집니다.",
     "가볍게 시작했지만 결과만큼은 제법 진지합니다. 오늘의 보스가 결정됐습니다.",
   ],
@@ -88,7 +88,8 @@ export const ResultScreen = () => {
   if (!winner) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-white/95 backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[rgba(255,249,240,0.82)] backdrop-blur-2xl">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,90,95,0.16),_transparent_28%),radial-gradient(circle_at_20%_80%,_rgba(0,209,178,0.18),_transparent_26%),radial-gradient(circle_at_85%_20%,_rgba(255,196,61,0.22),_transparent_24%),linear-gradient(180deg,_rgba(255,255,255,0.72),_rgba(255,244,233,0.94))]" />
       <div className="pointer-events-none absolute inset-0 h-full overflow-hidden">
         {particles.map((p, i) => (
           <div
@@ -107,19 +108,24 @@ export const ResultScreen = () => {
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-6 py-12 text-center animate-in zoom-in-95 duration-500">
-        <div className="space-y-1">
-          <h2 className="text-xl font-black uppercase tracking-tighter text-secondary">Today Lunch Boss</h2>
-          <h1 className="hero-gradient bg-clip-text text-5xl font-black text-transparent">결과 발표</h1>
+        <div className="space-y-3">
+          <div className="mx-auto inline-flex items-center rounded-full border border-white/70 bg-white/70 px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-secondary shadow-[0_10px_30px_rgba(16,24,40,0.08)] backdrop-blur-xl">
+            Today Lunch Boss
+          </div>
+          <div className="space-y-1">
+            <h1 className="hero-gradient bg-clip-text text-5xl font-black text-transparent">결과 발표</h1>
+            <p className="text-sm font-semibold text-foreground/65">오늘 식사 텐션을 가져갈 주인공이 정해졌습니다.</p>
+          </div>
         </div>
 
-        <Card className="relative overflow-visible rounded-[3.5rem] border-[12px] border-primary bg-white shadow-[0_30px_60px_rgba(255,165,0,0.4)]">
+        <Card className="relative overflow-visible rounded-[3.5rem] border-[12px] border-primary/85 bg-white/92 shadow-[0_30px_90px_rgba(255,96,74,0.28)] backdrop-blur-xl">
           <CardContent className="flex flex-col items-center gap-4 p-8">
             <div className="relative">
-              <div className="soft-glow flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent">
+              <div className="soft-glow flex h-32 w-32 items-center justify-center rounded-full bg-[linear-gradient(135deg,hsl(var(--primary))_0%,hsl(var(--accent))_55%,hsl(var(--secondary))_100%)]">
                 <Crown size={60} className="text-white drop-shadow-lg" />
               </div>
               <div className="absolute -right-8 -top-4 animate-bounce">
-                <Badge className="rotate-12 rounded-xl border-4 border-black bg-yellow-400 px-4 py-2 text-sm font-black text-black shadow-xl">
+                <Badge className="rotate-12 rounded-xl border-4 border-black bg-[hsl(var(--highlight))] px-4 py-2 text-sm font-black text-black shadow-xl">
                   {bosses.length > 1 ? "JOINT BOSS" : "LUNCH BOSS"}
                 </Badge>
               </div>
@@ -135,7 +141,7 @@ export const ResultScreen = () => {
             </div>
 
             {winningAmount && (
-              <div className="flex w-full flex-col items-center gap-1 rounded-3xl border-2 border-accent/20 bg-accent/10 p-3">
+              <div className="flex w-full flex-col items-center gap-1 rounded-3xl border border-accent/20 bg-[linear-gradient(135deg,rgba(255,96,74,0.08),rgba(0,209,178,0.14))] p-3">
                 <div className="flex items-center gap-2 text-xs font-black text-accent">
                   <Wallet size={16} />
                   <span>최종 결제 금액</span>
@@ -144,7 +150,7 @@ export const ResultScreen = () => {
               </div>
             )}
 
-            <div className="w-full rounded-[1.5rem] border-2 border-primary/5 bg-muted/30 p-4">
+            <div className="w-full rounded-[1.5rem] border border-white bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,247,240,0.92))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
               {loading ? (
                 <div className="space-y-2">
                   <Skeleton className="h-4 w-full bg-primary/10" />
@@ -163,14 +169,14 @@ export const ResultScreen = () => {
               <ListChecks size={20} />
               <h3>전체 참가자 결과</h3>
             </div>
-            <ScrollArea className="max-h-[400px] rounded-[2.5rem] border-4 border-white bg-white/50 p-4 shadow-inner backdrop-blur-md">
+            <ScrollArea className="max-h-[400px] rounded-[2.5rem] border border-white/80 bg-white/60 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md">
               <div className="space-y-2 pr-2">
                 {allResults.map((res, i) => {
                   const isBoss = (parseInt(digitsOnly(res.amount), 10) || 0) === maxVal;
                   return (
                     <div
                       key={res.participant.id}
-                      className={"flex items-center justify-between rounded-2xl border-2 p-4 transition-all " + (isBoss ? "border-primary bg-primary/10 shadow-sm" : "border-transparent bg-white")}
+                      className={"flex items-center justify-between rounded-2xl border p-4 transition-all " + (isBoss ? "border-primary/30 bg-[linear-gradient(135deg,rgba(255,96,74,0.12),rgba(255,196,61,0.16))] shadow-sm" : "border-white/80 bg-white/92")}
                     >
                       <div className="flex items-center gap-3">
                         <div className={"flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold " + (isBoss ? "bg-primary text-white" : "bg-muted text-muted-foreground")}>
@@ -193,18 +199,17 @@ export const ResultScreen = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" className="h-16 gap-2 rounded-[1.5rem] border-4 border-primary/20 text-lg font-bold hover:bg-primary/5" onClick={() => {}}>
-            <Share2 size={24} />
-            공유하기
-          </Button>
-          <Button className="hero-gradient soft-glow h-16 gap-2 rounded-[1.5rem] text-lg font-bold" onClick={resetGame}>
+        <div className="grid gap-3">
+          <Button className="hero-gradient soft-glow h-16 gap-2 rounded-[1.7rem] text-lg font-bold shadow-[0_20px_50px_rgba(255,96,74,0.28)]" onClick={resetGame}>
             <RefreshCw size={24} />
-            다시 하기
+            같은 인원으로 다시 하기
           </Button>
+          <div className="rounded-[1.4rem] border border-white/80 bg-white/65 px-5 py-4 text-left text-sm leading-6 text-foreground/68 backdrop-blur-xl">
+            참가자 구성을 유지한 채 바로 다음 판으로 넘어갈 수 있습니다. 인원을 바꾸려면 아래에서 처음 화면으로 돌아가세요.
+          </div>
         </div>
 
-        <Button variant="ghost" className="mb-8 h-12 gap-2 font-bold text-muted-foreground" onClick={fullReset}>
+        <Button variant="ghost" className="mb-8 h-12 gap-2 rounded-full font-bold text-muted-foreground hover:bg-white/40" onClick={fullReset}>
           <Home size={18} /> 처음부터 하기 (인원 재설정)
         </Button>
       </div>

@@ -76,7 +76,8 @@ const MainScreen = () => {
     return (
       <div className="relative min-h-[100svh] overflow-hidden px-5 py-8 sm:px-8 lg:px-12">
         <FloatingIcons />
-        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.92),_transparent_72%)]" />
+        <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.88),_transparent_72%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,_rgba(255,93,88,0.12),_transparent_28%),radial-gradient(circle_at_90%_16%,_rgba(0,209,178,0.12),_transparent_24%),radial-gradient(circle_at_50%_100%,_rgba(255,196,61,0.1),_transparent_26%)]" />
         <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-center gap-8 lg:gap-10">
           <div className="flex items-center justify-between rounded-full border border-white/70 bg-white/70 px-4 py-3 backdrop-blur-xl shadow-[0_12px_30px_rgba(16,24,40,0.08)]">
             <div className="flex items-center gap-3">
@@ -97,13 +98,13 @@ const MainScreen = () => {
           <div className="grid items-stretch gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             <section className="rounded-[2rem] border border-white/70 bg-white/82 p-6 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl lg:p-10">
               <div className="mb-8 flex flex-wrap items-center gap-3">
-                <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
+                <div className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
                   <Sparkles size={14} />
                   Office Lunch Game
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-xs font-semibold text-secondary">
                   <Target size={14} />
-                  부담 없이, 너무 밋밋하지 않게
+                  덜 파스텔하고 더 리드미컬하게
                 </div>
               </div>
 
@@ -114,16 +115,16 @@ const MainScreen = () => {
                 </div>
                 <div>
                   <h1 className="font-headline text-3xl font-extrabold leading-[1.02] tracking-[-0.05em] text-foreground break-keep whitespace-normal sm:text-4xl md:text-6xl lg:text-7xl">
-                    심플하게 시작하고
+                    빠르게 고르고
                     <br />
-                    경쾌하게 끝내는
+                    확실하게 정하는
                     <br />
                     점심 결제 게임
                   </h1>
                   <p className="mt-5 max-w-2xl break-keep whitespace-normal text-base leading-7 text-muted-foreground sm:text-lg">
-                    회의 직후, 외근 전, 팀 점심 직전. 너무 유치하지 않으면서도 정적이지 않게 흐름을 만들어 주는
-                    가벼운 런치 게임입니다. 인원만 고르면 바로 시작할 수 있고, 화면 자체도 비어 보이지 않게
-                    정보와 리듬을 채웠습니다.
+                    회의 직후, 외근 전, 팀 점심 직전. 과하게 귀엽기보다 선명하고 가볍게 반응하는 톤으로
+                    흐름을 만들었습니다. 인원만 고르면 바로 시작할 수 있고, 화면도 더 또렷한 대비와 컬러로
+                    지루하지 않게 정리했습니다.
                   </p>
                 </div>
               </div>
@@ -131,7 +132,7 @@ const MainScreen = () => {
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {HIGHLIGHTS.map(({ title, description, icon: Icon }) => (
                   <div key={title} className="rounded-[1.5rem] border border-border/60 bg-background/78 p-4">
-                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
+                    <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,96,74,0.12),rgba(0,209,178,0.16))] text-primary shadow-sm">
                       <Icon size={18} />
                     </div>
                     <div className="font-headline text-base font-bold text-foreground">{title}</div>
@@ -155,12 +156,12 @@ const MainScreen = () => {
             </section>
 
             <section className="grid gap-4">
-              <div className="rounded-[2rem] border border-white/70 bg-[#122033] p-6 text-white shadow-[0_20px_60px_rgba(12,18,28,0.18)]">
+              <div className="rounded-[2rem] border border-[rgba(255,255,255,0.18)] bg-[linear-gradient(145deg,#161f46_0%,#1f1557_45%,#0d7869_100%)] p-6 text-white shadow-[0_24px_70px_rgba(17,24,39,0.24)]">
                 <div className="text-sm font-semibold uppercase tracking-[0.24em] text-white/60">Quick Flow</div>
                 <div className="mt-4 space-y-4">
                   {STEPS.map((step, index) => (
                     <div key={step.label} className="flex gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/10 font-headline text-sm font-bold">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/12 font-headline text-sm font-bold shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
                         0{index + 1}
                       </div>
                       <div>
@@ -184,7 +185,7 @@ const MainScreen = () => {
                   {GAME_OPTIONS.map((game) => (
                     <div key={game.mode} className="rounded-[1.4rem] border border-border/60 bg-background/70 p-4">
                       <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,96,74,0.12),rgba(255,196,61,0.18))] text-2xl shadow-sm">
                           <span>{game.emoji}</span>
                         </div>
                         <div className="min-w-0 flex-1">
