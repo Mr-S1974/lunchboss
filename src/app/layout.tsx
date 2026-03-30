@@ -1,7 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
 
-const siteUrl = 'https://lunchboss.pages.dev';
+const siteUrl = 'https://lunchboss.pages.dev/';
 const siteTitle = 'Lunch Boss | 즐거운 점심 결제 한판';
 const siteDescription = '사다리, 룰렛, 셔플로 점심 결제 담당을 빠르게 정하는 Lunch Boss.';
 
@@ -9,12 +9,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: siteTitle,
   description: siteDescription,
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     type: 'website',
-    url: siteUrl,
     title: siteTitle,
     description: siteDescription,
     siteName: 'Lunch Boss',
@@ -44,6 +40,8 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <link rel="canonical" href={siteUrl} />
+        <meta property="og:url" content={siteUrl} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />

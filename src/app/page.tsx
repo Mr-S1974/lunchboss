@@ -9,6 +9,7 @@ import { RouletteGame } from '@/components/game/roulette-game';
 import { TapSurvival } from '@/components/game/tap-game';
 import { ResultScreen } from '@/components/result-screen';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { ArrowLeft, ChevronRight, Clock3, CircleDot, Home, ShieldCheck, Sparkles, Target, Trophy, UtensilsCrossed } from 'lucide-react';
 
 const HIGHLIGHTS = [
@@ -255,28 +256,33 @@ const MainScreen = () => {
             </div>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 lg:grid-cols-3">
             {GAME_OPTIONS.map((game) => (
-              <button
+              <Card
                 key={game.mode}
-                type="button"
-                className="block w-full rounded-[2rem] border border-border/70 bg-white/88 p-4 text-left shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:p-6"
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer rounded-[1.8rem] border border-border/70 bg-white/92 p-4 text-left shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:rounded-[2rem] sm:p-6"
                 onClick={() => handleGameSelect(game.mode)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleGameSelect(game.mode);
+                  }
+                }}
               >
-                <div className="flex min-h-[220px] w-full flex-col items-start gap-5 sm:min-h-[240px]">
-                  <div className="flex w-full flex-col items-start gap-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-[1.3rem] bg-background text-3xl shadow-sm">
-                      <span>{game.emoji}</span>
-                    </div>
-                    <div className="rounded-full bg-foreground/[0.04] px-3 py-1 text-[11px] font-semibold text-foreground/60 break-keep whitespace-normal">
+                <div className="flex w-full flex-col items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,96,74,0.12),rgba(255,196,61,0.18))] text-2xl shadow-sm">
+                    <span>{game.emoji}</span>
+                  </div>
+                  <div className="w-full min-w-0">
+                    <div className="inline-flex max-w-full rounded-full bg-foreground/[0.05] px-3 py-1 text-[11px] font-semibold text-foreground/60 break-keep whitespace-normal">
                       {game.subtitle}
                     </div>
+                    <div className="mt-3 font-headline text-xl font-bold text-foreground break-keep sm:text-2xl">{game.title}</div>
+                    <p className="mt-2 break-keep whitespace-normal text-sm leading-6 text-muted-foreground">{game.summary}</p>
                   </div>
-                  <div className="min-w-0 w-full">
-                    <div className="font-headline text-xl font-bold text-foreground break-keep sm:text-2xl">{game.title}</div>
-                    <p className="mt-3 break-keep whitespace-normal text-sm leading-6 text-muted-foreground">{game.summary}</p>
-                  </div>
-                  <div className="mt-auto flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {game.meta.map((item) => (
                       <span key={item} className="rounded-full border border-border/70 px-2.5 py-1 text-[11px] font-semibold text-foreground/65">
                         {item}
@@ -284,7 +290,7 @@ const MainScreen = () => {
                     ))}
                   </div>
                 </div>
-              </button>
+              </Card>
             ))}
           </div>
 
