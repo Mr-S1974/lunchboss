@@ -236,14 +236,14 @@ const MainScreen = () => {
   }
 
   if (view === 'setup') {
-    return <ParticipantSetup onNext={() => setView('game')} onBack={() => setView('intro')} />;
+    return <ParticipantSetup onNext={() => { setGameMode(null); setView('game'); }} onBack={() => setView('intro')} />;
   }
 
-  return (
-    <div className="min-h-[100svh] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
-      {!gameMode ? (
+  if (view === 'game' && !gameMode) {
+    return (
+      <div className="min-h-[100svh] bg-[linear-gradient(180deg,rgba(255,252,247,0.98),rgba(245,249,255,0.96))] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 animate-in fade-in slide-in-from-bottom-8">
-          <div className="flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-white/82 p-5 backdrop-blur-xl sm:flex-row sm:items-end sm:justify-between sm:p-8">
+          <div className="flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-white/92 p-5 shadow-[0_24px_80px_rgba(16,24,40,0.08)] backdrop-blur-xl sm:flex-row sm:items-end sm:justify-between sm:p-8">
             <div className="space-y-2 min-w-0">
               <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Game Select</div>
               <h2 className="font-headline text-3xl font-extrabold tracking-[-0.04em] text-foreground break-keep sm:text-4xl">오늘의 방식만 고르면 됩니다</h2>
@@ -262,7 +262,7 @@ const MainScreen = () => {
                 key={game.mode}
                 role="button"
                 tabIndex={0}
-                className="cursor-pointer rounded-[1.8rem] border border-border/70 bg-white/92 p-4 text-left shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:rounded-[2rem] sm:p-6"
+                className="cursor-pointer rounded-[1.8rem] border border-border/70 bg-white/96 p-4 text-left shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:rounded-[2rem] sm:p-6"
                 onClick={() => handleGameSelect(game.mode)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -296,16 +296,20 @@ const MainScreen = () => {
 
           <FloatingNav onBack={() => setView('setup')} onHome={handleGoHome} />
         </div>
-      ) : (
-        <div className="relative mx-auto flex h-full w-full max-w-4xl flex-1 flex-col pt-2 sm:pt-4">
-          <div className="pb-24 sm:pb-28">
-            {gameMode === 'ladder' && <LadderGame />}
-            {gameMode === 'roulette' && <RouletteGame />}
-            {gameMode === 'tap' && <TapSurvival />}
-          </div>
-          <FloatingNav onBack={() => setGameMode(null)} onHome={handleGoHome} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[100svh] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+      <div className="relative mx-auto flex h-full w-full max-w-4xl flex-1 flex-col pt-2 sm:pt-4">
+        <div className="pb-24 sm:pb-28">
+          {gameMode === 'ladder' && <LadderGame />}
+          {gameMode === 'roulette' && <RouletteGame />}
+          {gameMode === 'tap' && <TapSurvival />}
         </div>
-      )}
+        <FloatingNav onBack={() => setGameMode(null)} onHome={handleGoHome} />
+      </div>
       {winner && <ResultScreen onBack={() => setGameMode(null)} onHome={handleGoHome} />}
     </div>
   );
