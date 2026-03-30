@@ -237,7 +237,7 @@ const MainScreen = () => {
 
   if (view === 'setup') {
     return (
-      <div className="fixed inset-0 z-30 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,252,247,1),rgba(245,249,255,1))]">
+      <div className="fixed inset-0 z-30 overflow-y-auto bg-background">
         <ParticipantSetup onNext={() => { setGameMode(null); setView('game'); }} onBack={() => setView('intro')} />
       </div>
     );
@@ -245,9 +245,9 @@ const MainScreen = () => {
 
   if (view === 'game' && !gameMode) {
     return (
-      <div className="fixed inset-0 z-30 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,252,247,1),rgba(245,249,255,1))] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+      <div className="fixed inset-0 z-30 overflow-y-auto bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 animate-in fade-in slide-in-from-bottom-8">
-          <div className="flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-white/92 p-5 shadow-[0_24px_80px_rgba(16,24,40,0.08)] backdrop-blur-xl sm:flex-row sm:items-end sm:justify-between sm:p-8">
+          <div className="flex flex-col gap-4 rounded-[2rem] border border-border/70 bg-white p-5 shadow-[0_20px_50px_rgba(16,24,40,0.08)] sm:flex-row sm:items-end sm:justify-between sm:p-8">
             <div className="space-y-2 min-w-0">
               <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Game Select</div>
               <h2 className="font-headline text-3xl font-extrabold tracking-[-0.04em] text-foreground break-keep sm:text-4xl">오늘의 방식만 고르면 됩니다</h2>
@@ -255,7 +255,7 @@ const MainScreen = () => {
                 분위기를 과하게 끌어올리기보다, 팀 성격과 식사 자리의 온도에 맞게 가볍게 선택할 수 있도록 정리했습니다.
               </p>
             </div>
-            <div className="rounded-[1.5rem] bg-background/80 px-4 py-3 text-sm text-muted-foreground break-keep sm:max-w-[280px]">
+            <div className="rounded-[1.5rem] border border-border/70 bg-muted/50 px-4 py-3 text-sm text-muted-foreground break-keep sm:max-w-[280px]">
               참가자 정보는 이미 준비되었습니다. 게임만 고르면 바로 시작합니다.
             </div>
           </div>
@@ -266,7 +266,7 @@ const MainScreen = () => {
                 key={game.mode}
                 role="button"
                 tabIndex={0}
-                className="cursor-pointer rounded-[1.8rem] border border-border/70 bg-white/96 p-4 text-left shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:rounded-[2rem] sm:p-6"
+                className="cursor-pointer rounded-[1.8rem] border border-border/70 bg-white p-4 text-left shadow-[0_14px_36px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-muted/20 sm:rounded-[2rem] sm:p-6"
                 onClick={() => handleGameSelect(game.mode)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
@@ -305,7 +305,7 @@ const MainScreen = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-30 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,252,247,1),rgba(245,249,255,1))] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+    <div className="fixed inset-0 z-30 overflow-y-auto bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
       <div className="relative mx-auto flex h-full w-full max-w-4xl flex-1 flex-col pt-2 sm:pt-4">
         <div className="pb-24 sm:pb-28">
           {gameMode === 'ladder' && <LadderGame />}
