@@ -236,12 +236,16 @@ const MainScreen = () => {
   }
 
   if (view === 'setup') {
-    return <ParticipantSetup onNext={() => { setGameMode(null); setView('game'); }} onBack={() => setView('intro')} />;
+    return (
+      <div className="fixed inset-0 z-30 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,252,247,1),rgba(245,249,255,1))]">
+        <ParticipantSetup onNext={() => { setGameMode(null); setView('game'); }} onBack={() => setView('intro')} />
+      </div>
+    );
   }
 
   if (view === 'game' && !gameMode) {
     return (
-      <div className="min-h-[100svh] bg-[linear-gradient(180deg,rgba(255,252,247,0.98),rgba(245,249,255,0.96))] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+      <div className="fixed inset-0 z-30 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,252,247,1),rgba(245,249,255,1))] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 animate-in fade-in slide-in-from-bottom-8">
           <div className="flex flex-col gap-4 rounded-[2rem] border border-white/70 bg-white/92 p-5 shadow-[0_24px_80px_rgba(16,24,40,0.08)] backdrop-blur-xl sm:flex-row sm:items-end sm:justify-between sm:p-8">
             <div className="space-y-2 min-w-0">
@@ -301,7 +305,7 @@ const MainScreen = () => {
   }
 
   return (
-    <div className="min-h-[100svh] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+    <div className="fixed inset-0 z-30 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,252,247,1),rgba(245,249,255,1))] px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
       <div className="relative mx-auto flex h-full w-full max-w-4xl flex-1 flex-col pt-2 sm:pt-4">
         <div className="pb-24 sm:pb-28">
           {gameMode === 'ladder' && <LadderGame />}
