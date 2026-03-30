@@ -1,9 +1,39 @@
 import type {Metadata} from 'next';
 import './globals.css';
 
+const siteUrl = 'https://lunchboss.pages.dev';
+const siteTitle = 'Lunch Boss | 즐거운 점심 결제 한판';
+const siteDescription = '사다리, 룰렛, 셔플로 점심 결제 담당을 빠르게 정하는 Lunch Boss.';
+
 export const metadata: Metadata = {
-  title: 'Lunch Boss | 즐거운 점심 결제 한판',
-  description: '누가 오늘 점심의 주인공이 될까요? Lunch Boss와 함께 결정하세요!',
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    url: siteUrl,
+    title: siteTitle,
+    description: siteDescription,
+    siteName: 'Lunch Boss',
+    locale: 'ko_KR',
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lunch Boss 대표 이미지',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteTitle,
+    description: siteDescription,
+    images: ['/opengraph-image.png'],
+  },
 };
 
 export default function RootLayout({
