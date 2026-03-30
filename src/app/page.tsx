@@ -257,24 +257,24 @@ const MainScreen = () => {
 
           <div className="grid gap-4 lg:grid-cols-3">
             {GAME_OPTIONS.map((game) => (
-              <Button
+              <button
                 key={game.mode}
-                className="h-auto rounded-[2rem] border border-border/70 bg-white/88 p-4 text-left whitespace-normal shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:p-6"
-                variant="outline"
+                type="button"
+                className="block w-full rounded-[2rem] border border-border/70 bg-white/88 p-4 text-left shadow-[0_16px_45px_rgba(16,24,40,0.08)] transition-all hover:-translate-y-1 hover:bg-white sm:p-6"
                 onClick={() => handleGameSelect(game.mode)}
               >
-                <div className="flex h-full w-full flex-col items-start gap-5">
-                  <div className="flex w-full flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="flex min-h-[220px] w-full flex-col items-start gap-5 sm:min-h-[240px]">
+                  <div className="flex w-full flex-col items-start gap-3">
                     <div className="flex h-14 w-14 items-center justify-center rounded-[1.3rem] bg-background text-3xl shadow-sm">
                       <span>{game.emoji}</span>
                     </div>
-                    <div className="max-w-full rounded-full bg-foreground/[0.04] px-3 py-1 text-[11px] font-semibold text-foreground/60 break-keep">
+                    <div className="rounded-full bg-foreground/[0.04] px-3 py-1 text-[11px] font-semibold text-foreground/60 break-keep whitespace-normal">
                       {game.subtitle}
                     </div>
                   </div>
-                  <div className="min-w-0">
-                    <div className="font-headline text-xl font-bold text-foreground sm:text-2xl">{game.title}</div>
-                    <p className="mt-3 break-keep text-sm leading-6 text-muted-foreground">{game.summary}</p>
+                  <div className="min-w-0 w-full">
+                    <div className="font-headline text-xl font-bold text-foreground break-keep sm:text-2xl">{game.title}</div>
+                    <p className="mt-3 break-keep whitespace-normal text-sm leading-6 text-muted-foreground">{game.summary}</p>
                   </div>
                   <div className="mt-auto flex flex-wrap gap-2">
                     {game.meta.map((item) => (
@@ -284,7 +284,7 @@ const MainScreen = () => {
                     ))}
                   </div>
                 </div>
-              </Button>
+              </button>
             ))}
           </div>
 
