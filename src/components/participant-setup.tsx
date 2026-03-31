@@ -107,7 +107,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
           </div>
         </section>
 
-        <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 sm:bottom-6 sm:right-6">
+        <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
           <Button className="h-12 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl hover:bg-white" onClick={onBack}>
             <Home size={16} className="mr-2" /> 메인
           </Button>
@@ -242,7 +242,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
         게임 선택으로 이동
       </Button>
 
-      <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 sm:bottom-6 sm:right-6">
+      <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
         <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={() => setStep('count')}>
           <ArrowLeft size={16} className="mr-2" /> 이전
         </Button>

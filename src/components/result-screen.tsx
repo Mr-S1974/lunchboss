@@ -210,7 +210,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
         </div>
       </div>
 
-      <div className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 sm:bottom-6 sm:right-6">
+      <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
         <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
           <ArrowLeft size={16} className="mr-2" /> 이전
         </Button>
