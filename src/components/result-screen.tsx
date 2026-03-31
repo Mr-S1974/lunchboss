@@ -110,7 +110,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
       <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-10 pb-32 text-center animate-in zoom-in-95 duration-500 sm:px-6 sm:py-12 sm:pb-36">
         <div className="space-y-3">
           <div className="mx-auto inline-flex items-center rounded-full border border-white/70 bg-white/70 px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-secondary shadow-[0_10px_30px_rgba(16,24,40,0.08)] backdrop-blur-xl">
-            Today Lunch Boss
+            오늘의 런치 보스
           </div>
           <div className="space-y-1">
             <h1 className="hero-gradient bg-clip-text text-4xl font-black text-transparent sm:text-5xl">결과 발표</h1>
@@ -126,7 +126,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
               </div>
               <div className="absolute -right-3 -top-3 sm:-right-8 sm:-top-4 animate-bounce">
                 <Badge className="rotate-12 rounded-xl border-4 border-black bg-[hsl(var(--highlight))] px-3 py-1.5 text-xs font-black text-black shadow-xl sm:px-4 sm:py-2 sm:text-sm">
-                  {bosses.length > 1 ? "JOINT BOSS" : "LUNCH BOSS"}
+                  {bosses.length > 1 ? "공동 보스" : "런치 보스"}
                 </Badge>
               </div>
             </div>
@@ -189,7 +189,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
                       </div>
                       <div className="ml-3 shrink-0 text-right">
                         <div className={"text-sm font-black " + (isBoss ? "text-accent" : "text-primary")}>{res.amount}원</div>
-                        {isBoss && <Badge className="h-4 border-none bg-accent text-[9px] font-bold">BOSS</Badge>}
+                        {isBoss && <Badge className="h-4 border-none bg-accent text-[9px] font-bold">선정</Badge>}
                       </div>
                     </div>
                   );
@@ -210,7 +210,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
         </div>
       </div>
 
-      <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
+      <div className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 sm:bottom-6 sm:right-6">
         <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
           <ArrowLeft size={16} className="mr-2" /> 이전
         </Button>

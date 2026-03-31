@@ -11,8 +11,6 @@ import { ResultScreen } from '@/components/result-screen';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, ChevronRight, Clock3, CircleDot, Home as HomeIcon, ShieldCheck, Sparkles, Target, Trophy, UtensilsCrossed } from 'lucide-react';
-const BUILD_LABEL = (process.env.NEXT_PUBLIC_BUILD_SHA ?? 'local').slice(0, 7);
-
 
 const HIGHLIGHTS = [
   { title: '빠른 결정', description: '회의 끝나고 바로 시작해도 1분 안에 세팅이 끝납니다.', icon: Clock3 },
@@ -55,7 +53,7 @@ const STEPS = [
 
 const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => void }) => {
   return (
-    <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
+    <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 sm:bottom-6 sm:right-6">
       <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
         <ArrowLeft size={16} className="mr-2" /> 이전
       </Button>
@@ -65,12 +63,6 @@ const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => voi
     </div>
   );
 };
-const BuildBadge = () => (
-  <div className="fixed bottom-4 left-4 z-40 rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/65 shadow-[0_18px_40px_rgba(16,24,40,0.12)] backdrop-blur-xl sm:bottom-6 sm:left-6">
-    build {BUILD_LABEL}
-  </div>
-);
-
 
 const MainScreen = () => {
   const [view, setView] = useState<'intro' | 'setup' | 'game'>('intro');
@@ -127,7 +119,7 @@ const MainScreen = () => {
               <div className="mb-8 flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
                   <Sparkles size={14} />
-                  Office Lunch Game
+                  점심 결제 게임
                 </div>
                 <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-xs font-semibold text-secondary">
                   <Target size={14} />
@@ -184,7 +176,7 @@ const MainScreen = () => {
 
             <section className="grid gap-4">
               <div className="rounded-[2rem] border border-[rgba(255,255,255,0.18)] bg-[linear-gradient(145deg,#161f46_0%,#1f1557_45%,#0d7869_100%)] p-6 text-white shadow-[0_24px_70px_rgba(17,24,39,0.24)]">
-                <div className="text-sm font-semibold uppercase tracking-[0.24em] text-white/60">Quick Flow</div>
+                <div className="text-sm font-semibold uppercase tracking-[0.24em] text-white/60">진행 순서</div>
                 <div className="mt-4 space-y-4">
                   {STEPS.map((step, index) => (
                     <div key={step.label} className="flex gap-4">
@@ -203,10 +195,10 @@ const MainScreen = () => {
               <div className="rounded-[2rem] border border-white/70 bg-white/78 p-6 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Recommended</div>
+                    <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">추천 방식</div>
                     <h2 className="mt-2 font-headline text-2xl font-bold text-foreground">상황별 게임 선택</h2>
                   </div>
-                  <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">3 modes</div>
+                  <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">3가지 방식</div>
                 </div>
                 <div className="mt-4 space-y-3">
                   {GAME_OPTIONS.map((game) => (
@@ -257,7 +249,7 @@ const MainScreen = () => {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 animate-in fade-in slide-in-from-bottom-8">
           <div className="flex flex-col gap-4 rounded-[2rem] border border-border/70 bg-white p-5 shadow-[0_20px_50px_rgba(16,24,40,0.08)] sm:flex-row sm:items-end sm:justify-between sm:p-8">
             <div className="space-y-2 min-w-0">
-              <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Game Select</div>
+              <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">게임 선택</div>
               <h2 className="font-headline text-3xl font-extrabold tracking-[-0.04em] text-foreground break-keep sm:text-4xl">오늘의 방식만 고르면 됩니다</h2>
               <p className="max-w-2xl break-keep text-sm leading-6 text-muted-foreground">
                 분위기를 과하게 끌어올리기보다, 팀 성격과 식사 자리의 온도에 맞게 가볍게 선택할 수 있도록 정리했습니다.
@@ -333,7 +325,6 @@ export default function Home() {
     <GameProvider>
       <main className="relative min-h-screen bg-background selection:bg-primary selection:text-white">
         <MainScreen />
-        <BuildBadge />
       </main>
     </GameProvider>
   );

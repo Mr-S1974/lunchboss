@@ -63,7 +63,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
         <section className="rounded-[2rem] border border-white/70 bg-white/82 p-5 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl sm:p-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
             <Users size={14} />
-            Participant Setup
+            인원 설정
           </div>
           <h2 className="mt-6 font-headline text-3xl font-extrabold tracking-[-0.04em] text-foreground sm:text-5xl">
             먼저 인원 수를
@@ -87,7 +87,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
         <section className="rounded-[2rem] border border-white/70 bg-[#122033] p-5 text-white shadow-[0_24px_80px_rgba(12,18,28,0.16)] sm:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <div className="text-sm font-semibold uppercase tracking-[0.24em] text-white/60">Count</div>
+              <div className="text-sm font-semibold uppercase tracking-[0.24em] text-white/60">인원 선택</div>
               <h3 className="mt-2 font-headline text-xl font-bold break-keep sm:text-2xl">오늘 식사 인원은 몇 명인가요</h3>
             </div>
             <div className="self-start rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/80">2 - 10명</div>
@@ -107,7 +107,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
           </div>
         </section>
 
-        <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
+        <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 sm:bottom-6 sm:right-6">
           <Button className="h-12 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl hover:bg-white" onClick={onBack}>
             <Home size={16} className="mr-2" /> 메인
           </Button>
@@ -126,7 +126,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
               <Sparkles size={14} />
-              Member Details
+              이름 확인
             </div>
             <h2 className="mt-4 font-headline text-3xl font-extrabold tracking-[-0.04em] text-foreground break-keep sm:text-4xl">자동 배정된 이름을 정리해주세요</h2>
             <p className="mt-2 max-w-2xl break-keep text-sm leading-6 text-muted-foreground">
@@ -148,7 +148,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
       <div className="grid flex-1 gap-6 lg:grid-cols-[0.92fr_1.08fr]">
         <Card className="overflow-hidden rounded-[2rem] border border-white/70 bg-white/82 shadow-[0_20px_60px_rgba(16,24,40,0.08)] backdrop-blur-xl">
           <CardContent className="p-5 sm:p-7">
-            <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Quick Input</div>
+            <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">빠른 입력</div>
             <h3 className="mt-3 font-headline text-2xl font-bold text-foreground">이름 빠르게 채우기</h3>
             <p className="mt-2 break-keep text-sm leading-6 text-muted-foreground">
               엔터 한 번으로 다음 미입력 슬롯에 바로 반영됩니다. 역할 배지도 함께 순환됩니다.
@@ -223,7 +223,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
                         </div>
                       </div>
                       <Badge variant="outline" className={badgeClass + ' self-end sm:self-auto'}>
-                        {isPlaceholder ? 'AUTO' : 'READY'}
+                        {isPlaceholder ? '자동 채움' : '입력 완료'}
                       </Badge>
                     </CardContent>
                   </Card>
@@ -242,7 +242,7 @@ export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBac
         게임 선택으로 이동
       </Button>
 
-      <div className="mt-6 flex flex-col items-end gap-2 sm:mt-8">
+      <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 sm:bottom-6 sm:right-6">
         <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={() => setStep('count')}>
           <ArrowLeft size={16} className="mr-2" /> 이전
         </Button>
