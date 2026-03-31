@@ -40,6 +40,8 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4269966166949156" crossOrigin="anonymous"></script>
+        <meta name="google-adsense-account" content="ca-pub-4269966166949156" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
