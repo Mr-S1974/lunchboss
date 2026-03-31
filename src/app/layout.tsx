@@ -40,6 +40,17 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-TXHYQWL2B9"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-TXHYQWL2B9');
+            `,
+          }}
+        />
         <link rel="canonical" href={siteUrl} />
         <meta property="og:url" content={siteUrl} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
