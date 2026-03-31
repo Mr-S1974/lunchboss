@@ -11,6 +11,8 @@ import { ResultScreen } from '@/components/result-screen';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, ChevronRight, Clock3, CircleDot, Home as HomeIcon, ShieldCheck, Sparkles, Target, Trophy, UtensilsCrossed } from 'lucide-react';
+const BUILD_LABEL = (process.env.NEXT_PUBLIC_BUILD_SHA ?? 'local').slice(0, 7);
+
 
 const HIGHLIGHTS = [
   { title: '빠른 결정', description: '회의 끝나고 바로 시작해도 1분 안에 세팅이 끝납니다.', icon: Clock3 },
@@ -63,6 +65,12 @@ const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => voi
     </div>
   );
 };
+const BuildBadge = () => (
+  <div className="fixed bottom-4 left-4 z-40 rounded-full border border-white/70 bg-white/85 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/65 shadow-[0_18px_40px_rgba(16,24,40,0.12)] backdrop-blur-xl sm:bottom-6 sm:left-6">
+    build {BUILD_LABEL}
+  </div>
+);
+
 
 const MainScreen = () => {
   const [view, setView] = useState<'intro' | 'setup' | 'game'>('intro');
@@ -237,7 +245,7 @@ const MainScreen = () => {
 
   if (view === 'setup') {
     return (
-      <div className="fixed inset-0 z-30 overflow-y-auto bg-background">
+      <div className="relative z-30 min-h-[100svh] bg-background">
         <ParticipantSetup onNext={() => { setGameMode(null); setView('game'); }} onBack={() => setView('intro')} />
       </div>
     );
@@ -245,7 +253,7 @@ const MainScreen = () => {
 
   if (view === 'game' && !gameMode) {
     return (
-      <div className="fixed inset-0 z-30 overflow-y-auto bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+      <div className="relative z-30 min-h-[100svh] bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 animate-in fade-in slide-in-from-bottom-8">
           <div className="flex flex-col gap-4 rounded-[2rem] border border-border/70 bg-white p-5 shadow-[0_20px_50px_rgba(16,24,40,0.08)] sm:flex-row sm:items-end sm:justify-between sm:p-8">
             <div className="space-y-2 min-w-0">
@@ -305,7 +313,7 @@ const MainScreen = () => {
   }
 
   return (
-    <div className="fixed inset-0 z-30 overflow-y-auto bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+    <div className="relative z-30 min-h-[100svh] bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
       <div className="relative mx-auto flex h-full w-full max-w-4xl flex-1 flex-col pt-2 sm:pt-4">
         <div className="pb-24 sm:pb-28">
           {gameMode === 'ladder' && <LadderGame />}
@@ -319,11 +327,13 @@ const MainScreen = () => {
   );
 };
 
+
 export default function Home() {
   return (
     <GameProvider>
       <main className="relative min-h-screen bg-background selection:bg-primary selection:text-white">
         <MainScreen />
+        <BuildBadge />
       </main>
     </GameProvider>
   );

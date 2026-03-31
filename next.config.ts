@@ -2,6 +2,13 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   output: 'export',
+  env: {
+    NEXT_PUBLIC_BUILD_SHA:
+      process.env.CF_PAGES_COMMIT_SHA ??
+      process.env.VERCEL_GIT_COMMIT_SHA ??
+      process.env.GITHUB_SHA ??
+      'local',
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
