@@ -121,10 +121,6 @@ const MainScreen = () => {
                   <Sparkles size={14} />
                   점심 결제 게임
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2 text-xs font-semibold text-secondary">
-                  <Target size={14} />
-                  덜 파스텔하고 더 리드미컬하게
-                </div>
               </div>
 
               <div className="space-y-5">
@@ -140,11 +136,11 @@ const MainScreen = () => {
                     <br />
                     점심 결제 게임
                   </h1>
-                  <p className="mt-5 max-w-2xl break-keep whitespace-normal text-base leading-7 text-muted-foreground sm:text-lg">
-                    회의 직후, 외근 전, 팀 점심 직전. 과하게 귀엽기보다 선명하고 가볍게 반응하는 톤으로
-                    흐름을 만들었습니다. 인원만 고르면 바로 시작할 수 있고, 화면도 더 또렷한 대비와 컬러로
-                    지루하지 않게 정리했습니다.
-                  </p>
+                  <div className="mt-5 max-w-2xl space-y-2 break-keep text-base leading-7 text-muted-foreground sm:text-lg">
+                    <p>회의 직후: 설명 길게 할 필요 없이, 인원만 고르면 바로 시작합니다.</p>
+                    <p>외근 전: 사다리, 룰렛, 셔플 중 하나만 고르고 빠르게 결제 담당을 정합니다.</p>
+                    <p>팀 점심 직전: 분위기는 살리고 부담은 줄이는 톤으로, 어색하지 않게 결과만 또렷하게 보여줍니다.</p>
+                  </div>
                 </div>
               </div>
 
