@@ -10,7 +10,7 @@ import { TapSurvival } from '@/components/game/tap-game';
 import { ResultScreen } from '@/components/result-screen';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, ChevronRight, Clock3, CircleDot, Home, ShieldCheck, Sparkles, Target, Trophy, UtensilsCrossed } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Clock3, CircleDot, Home as HomeIcon, ShieldCheck, Sparkles, Target, Trophy, UtensilsCrossed } from 'lucide-react';
 
 const HIGHLIGHTS = [
   { title: '빠른 결정', description: '회의 끝나고 바로 시작해도 1분 안에 세팅이 끝납니다.', icon: Clock3 },
@@ -58,7 +58,7 @@ const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => voi
         <ArrowLeft size={16} className="mr-2" /> 이전
       </Button>
       <Button className="h-12 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl hover:bg-white" onClick={onHome}>
-        <Home size={16} className="mr-2" /> 메인
+        <HomeIcon size={16} className="mr-2" /> 메인
       </Button>
     </div>
   );
