@@ -28,7 +28,7 @@ import {
 const HIGHLIGHTS = [
   { title: '빠른 결정', description: '결제든 메뉴든 커피든, 고민 길어지기 전에 기분 좋게 결론을 냅니다.', icon: Clock3 },
   { title: '재미있는 압축 과정', description: '결정 과정도 심심하지 않게, 후보가 줄어드는 재미를 살렸습니다.', icon: Sparkles },
-  { title: '상황 맞춤 선택', description: '지금 필요한 흐름만 골라 바로 들어가면 됩니다.', icon: ShieldCheck },
+  { title: '상황 맞춤 선택', description: '지금 필요한 모드만 골라 바로 들어가면 됩니다.', icon: ShieldCheck },
 ];
 
 const EXPERIENCE_OPTIONS = [
@@ -38,7 +38,7 @@ const EXPERIENCE_OPTIONS = [
     title: '점심 결제 게임',
     subtitle: '인원 설정 후 사다리, 룰렛, 셔플 중 선택',
     summary: '누가 조금 더 낼지 정해야 할 때, 괜히 무겁지 않게 웃으면서 결과를 받아들이게 만드는 모드입니다.',
-    meta: ['인원 필요', '게임형', '기존 흐름'],
+    meta: ['인원 필요', '게임형', '대표 모드'],
   },
   {
     mode: 'menu',
@@ -80,13 +80,13 @@ const GAME_OPTIONS = [
     emoji: '🖐️',
     title: '지목 셔플',
     subtitle: '짧고 직관적인 서바이벌 방식',
-    summary: '터치 기반이라 흐름이 빠르고, 한 명 면제나 한 명 지목 상황에 잘 맞습니다.',
+    summary: '터치 기반이라 진행이 빠르고, 한 명 면제나 한 명 지목 상황에 잘 맞습니다.',
     meta: ['순발력', '짧은 플레이', '캐주얼'],
   },
 ] as const;
 
 const STEPS = [
-  { label: '1. 흐름 선택', description: '오늘은 누가 쏠지, 뭘 먹을지, 어디 갈지부터 빠르게 고릅니다.' },
+  { label: '1. 모드 선택', description: '오늘은 누가 쏠지, 뭘 먹을지, 어디 갈지부터 빠르게 고릅니다.' },
   { label: '2. 조건 정리', description: '인원이나 취향만 짧게 정리하고 바로 결과 쪽으로 넘어갑니다.' },
   { label: '3. 결과 확정', description: '후보가 줄어드는 재미를 보고 마지막 선택을 기분 좋게 받습니다.' },
 ] as const;
@@ -94,26 +94,21 @@ const STEPS = [
 type ExperienceMode = 'payment' | 'menu' | 'coffee' | null;
 type ViewMode = 'intro' | 'setup' | 'game' | 'recommendation';
 
-const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => void }) => {
+const FloatingNav = ({
+  onBack,
+  onHome,
+  className,
+}: {
+  onBack: () => void;
+  onHome: () => void;
+  className?: string;
+}) => {
   return (
-    <div className="fixed inset-x-4 bottom-4 z-40 grid grid-cols-2 gap-2 sm:inset-x-auto sm:right-6 sm:flex sm:w-auto sm:flex-col sm:bottom-6">
+    <div className={['fixed right-4 z-40 flex flex-col gap-2 sm:right-6', className ?? 'bottom-4 sm:bottom-6'].join(' ')}>
       <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
         <ArrowLeft size={16} className="mr-2" /> 이전
       </Button>
       <Button className="h-12 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl hover:bg-white" onClick={onHome}>
-        <HomeIcon size={16} className="mr-2" /> 메인
-      </Button>
-    </div>
-  );
-};
-
-const InlineNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => void }) => {
-  return (
-    <div className="mb-4 flex gap-2 sm:mb-6 sm:justify-end">
-      <Button variant="outline" className="h-11 flex-1 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.10)] backdrop-blur-xl sm:h-12 sm:flex-none" onClick={onBack}>
-        <ArrowLeft size={16} className="mr-2" /> 이전
-      </Button>
-      <Button className="h-11 flex-1 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.10)] backdrop-blur-xl hover:bg-white sm:h-12 sm:flex-none" onClick={onHome}>
         <HomeIcon size={16} className="mr-2" /> 메인
       </Button>
     </div>
@@ -193,7 +188,7 @@ const MainScreen = () => {
               <div className="space-y-5">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-semibold text-foreground/70">
                   <Trophy size={14} className="text-accent" />
-                  점심시간 고민을 짧고 유쾌하게 끝내는 흐름
+                  점심시간 고민을 짧고 유쾌하게 끝내는 모드들
                 </div>
                 <div>
                   <h1 className="font-headline text-[2rem] font-extrabold leading-[1.02] tracking-[-0.05em] text-foreground break-keep whitespace-normal sm:text-4xl md:text-6xl lg:text-7xl">
@@ -224,7 +219,7 @@ const MainScreen = () => {
               </div>
 
               <div className="mt-6 rounded-[1.4rem] border border-border/70 bg-background/78 px-4 py-4 text-sm leading-6 text-muted-foreground sm:mt-8">
-                오늘 필요한 흐름은 오른쪽 카드에서 바로 시작할 수 있습니다. 설명을 보고 지금 가장 맞는 버튼을 눌러 들어가면 됩니다.
+                오늘 필요한 모드는 오른쪽 카드에서 바로 시작할 수 있습니다. 설명을 보고 지금 가장 맞는 버튼을 눌러 들어가면 됩니다.
               </div>
             </section>
 
@@ -250,7 +245,7 @@ const MainScreen = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">오늘의 선택</div>
-                    <h2 className="mt-2 font-headline text-2xl font-bold text-foreground">지금 필요한 흐름 고르기</h2>
+                    <h2 className="mt-2 font-headline text-2xl font-bold text-foreground">지금 필요한 모드 고르기</h2>
                   </div>
                   <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">3가지 모드</div>
                 </div>
@@ -306,10 +301,10 @@ const MainScreen = () => {
     return (
       <div className="relative z-30 min-h-[100svh] bg-background px-4 py-6 pb-10 sm:px-8 sm:py-8 lg:px-12">
         <div className="mx-auto w-full max-w-6xl">
-          <InlineNav onBack={() => setView('intro')} onHome={handleGoHome} />
           {experienceMode === 'menu' && <MenuRecommendationFlow />}
           {experienceMode === 'coffee' && <CoffeeRecommendationFlow />}
         </div>
+        <FloatingNav onBack={() => setView('intro')} onHome={handleGoHome} className="bottom-[5.25rem] sm:bottom-6" />
       </div>
     );
   }

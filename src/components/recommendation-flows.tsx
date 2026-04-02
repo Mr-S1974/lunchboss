@@ -92,7 +92,7 @@ const MENU_ITEMS: MenuItem[] = [
   { name: "포케", moods: ["가볍게", "새로운 것"], tags: ["cold"], note: "가볍게 먹고 싶을 때 가장 명확한 방향성" },
   { name: "샌드위치", moods: ["가볍게", "노멀"], tags: ["cold"], note: "짧게 먹고 바로 움직여야 할 때 무난한 선택" },
   { name: "샐러드볼", moods: ["가볍게"], tags: ["cold"], note: "부담을 줄이고 싶은 날 가장 직관적인 선택입니다." },
-  { name: "냉모밀", moods: ["면", "가볍게"], tags: ["noodle", "cold"], note: "깔끔하고 빠르게 먹는 흐름에 잘 맞는 메뉴" },
+  { name: "냉모밀", moods: ["면", "가볍게"], tags: ["noodle", "cold"], note: "깔끔하고 빠르게 먹는 분위기에 잘 맞는 메뉴" },
   { name: "초밥", moods: ["가볍게", "새로운 것"], tags: ["cold"], note: "깔끔하고 과하지 않게 분위기를 바꾸고 싶을 때" },
   { name: "마라탕", moods: ["매운맛", "새로운 것"], tags: ["spicy", "soup"], note: "자극적인 확실한 한 방이 필요할 때" },
   { name: "부대찌개", moods: ["든든한 한식", "국물", "매운맛"], tags: ["spicy", "soup"], note: "든든하고 자극적인 쪽으로 의견이 모일 때 잘 맞습니다." },
@@ -494,7 +494,7 @@ export const MenuRecommendationFlow = () => {
                 <Shuffle size={18} className="mr-2" /> 메뉴 추천 시작
               </Button>
               <Button variant="outline" className="h-14 rounded-full px-6 font-semibold" onClick={reset}>
-                <RotateCcw size={18} className="mr-2" /> 조건만 유지하고 초기화
+                <RotateCcw size={18} className="mr-2" /> 초기화
               </Button>
             </div>
           </CardContent>
@@ -556,7 +556,7 @@ export const MenuRecommendationFlow = () => {
                 <div className="mt-6 flex items-center gap-3 rounded-[1.6rem] border border-white/10 bg-white/5 px-4 py-5 text-sm text-white/70">
                   {phase === "setup" ? <Sparkles size={18} /> : <LoaderCircle size={18} className="animate-spin" />}
                   {phase === "setup"
-                    ? "조건을 고르고 추천을 시작하면 후보가 많을 때부터 마지막 하나까지 줄어드는 흐름이 여기서 보입니다."
+                    ? "조건을 고르고 추천을 시작하면 후보가 많을 때부터 마지막 하나까지 줄어드는 과정이 여기서 보입니다."
                     : "후보를 순차적으로 줄이는 중입니다. 마지막까지 시선이 끊기지 않도록 텐션을 유지합니다."}
                 </div>
               )}
@@ -812,7 +812,7 @@ export const CoffeeRecommendationFlow = () => {
                 )}
               </div>
               <div className="mt-5 rounded-[1.4rem] border border-border/70 bg-background/80 px-4 py-4 text-sm leading-6 text-muted-foreground">
-                현재 활성 후보 {activeCandidates.length}곳. 기본 프랜차이즈를 줄이고 지역 카페를 섞어도 복불복 흐름은 그대로 유지됩니다.
+                현재 활성 후보 {activeCandidates.length}곳. 기본 프랜차이즈를 줄이고 지역 카페를 섞어도 복불복 방식은 그대로 유지됩니다.
               </div>
             </CardContent>
           </Card>
@@ -883,7 +883,7 @@ export const CoffeeRecommendationFlow = () => {
                   <Coffee size={18} className="mr-2" /> 카페 추천 시작
                 </Button>
                 <Button variant="outline" className="h-14 rounded-full px-6 font-semibold" onClick={reset}>
-                  <RotateCcw size={18} className="mr-2" /> 연출만 다시 돌리기
+                  <RotateCcw size={18} className="mr-2" /> 초기화
                 </Button>
               </div>
             </CardContent>
@@ -892,7 +892,7 @@ export const CoffeeRecommendationFlow = () => {
       </div>
       <MobileActionBar
         primaryLabel="카페 추천 시작"
-        secondaryLabel="다시 돌리기"
+        secondaryLabel="초기화"
         onPrimary={startRecommendation}
         onSecondary={reset}
         primaryDisabled={activeCandidates.length === 0}

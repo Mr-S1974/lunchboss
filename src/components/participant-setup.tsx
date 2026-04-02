@@ -19,7 +19,7 @@ const FUNNY_NAMES = [
 const COUNT_NOTES = [
   '이름은 자동으로 채워져서 바로 다음 단계로 넘어갈 수 있습니다.',
   '닉네임이 마음에 들지 않으면 참가자 화면에서 바로 수정할 수 있습니다.',
-  '점심 전 짧은 시간에도 부담 없이 진행할 수 있는 흐름으로 구성했습니다.',
+  '점심 전 짧은 시간에도 부담 없이 진행할 수 있는 구성으로 정리했습니다.',
 ] as const;
 
 export const ParticipantSetup = ({ onNext, onBack }: { onNext: () => void; onBack: () => void }) => {
