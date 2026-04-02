@@ -18,28 +18,28 @@ interface Particle {
 
 const COMMENDATIONS: Record<string, string[]> = {
   "텅장 사원": [
-    "오늘은 통 크게 한 번 갑니다. 다음 점심은 꼭 회수하시길 바랍니다.",
-    "월말은 잠시 잊고, 오늘은 런치 히어로로 기록됩니다.",
+    "오늘은 기분 좋게 한 번 크게 갑니다. 다음 판의 역전 서사도 벌써 기대됩니다.",
+    "월말 계산기는 잠시 닫아두고, 오늘은 통 큰 주인공으로 기억됩니다.",
   ],
   "법카 사냥꾼 대리": [
-    "역시 결제 동선이 가장 빠른 분답게 오늘의 주인공이 되셨습니다.",
-    "타이밍 좋게 카드가 열렸습니다. 오늘 점심 분위기까지 챙겨주세요.",
+    "카드 꺼내는 동선까지 깔끔한 분답게 오늘의 스포트라이트를 받으셨습니다.",
+    "좋은 타이밍에 카드가 열렸습니다. 오늘 점심 분위기까지 시원하게 가져가주세요.",
   ],
   "법카 장전 과장": [
-    "든든한 결단력으로 오늘 식사의 품격을 책임지게 되셨습니다.",
-    "역시 준비된 리더는 결제 순간에도 흔들리지 않습니다.",
+    "든든하게 판을 받아주셨으니 오늘 식사 분위기도 같이 올라갑니다.",
+    "준비된 사람은 결제 타이밍에도 멋있습니다. 오늘은 시원하게 갑니다.",
   ],
   "허허 부장": [
-    "여유로운 미소와 함께 오늘 점심을 크게 한 번 쏘는 날입니다.",
-    "한마디로 믿고 먹는 점심. 오늘의 보스 자리가 잘 어울립니다.",
+    "웃으면서 크게 한 번 내는 날이 제일 멋있습니다. 오늘 그 장면의 주인공입니다.",
+    "이왕 걸렸다면 멋있게. 오늘의 한 끼를 더 기분 좋게 만드는 역할이 잘 어울립니다.",
   ],
   "커피 요정": [
-    "커피에 이어 점심까지 챙기는 진정한 오피스 요정이 되셨습니다.",
-    "팀 분위기를 부드럽게 살리는 오늘의 결제 요정입니다.",
+    "커피도 챙기고 점심도 살리는, 오늘 오피스 텐션 메이커로 등판하셨습니다.",
+    "지갑은 조금 열렸지만 분위기는 확실히 좋아지는 오늘의 요정입니다.",
   ],
   default: [
-    "오늘 점심은 이분이 분위기까지 책임집니다.",
-    "가볍게 시작했지만 결과만큼은 제법 진지합니다. 오늘의 보스가 결정됐습니다.",
+    "오늘 점심은 이분 덕분에 한층 더 기분 좋게 흘러갑니다.",
+    "가볍게 돌렸지만 결과는 확실합니다. 오늘의 한턱 담당이 멋지게 정해졌습니다.",
   ],
 };
 
@@ -110,11 +110,11 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
       <div className="relative z-10 mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-10 pb-32 text-center animate-in zoom-in-95 duration-500 sm:px-6 sm:py-12 sm:pb-36">
         <div className="space-y-3">
           <div className="mx-auto inline-flex items-center rounded-full border border-white/70 bg-white/70 px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-secondary shadow-[0_10px_30px_rgba(16,24,40,0.08)] backdrop-blur-xl">
-            오늘의 런치 보스
+            오늘의 기분 좋은 한턱
           </div>
           <div className="space-y-1">
-            <h1 className="hero-gradient bg-clip-text text-4xl font-black text-transparent sm:text-5xl">결과 발표</h1>
-            <p className="text-sm font-semibold text-foreground/65 break-keep">오늘 식사 텐션을 가져갈 주인공이 정해졌습니다.</p>
+            <h1 className="hero-gradient bg-clip-text text-4xl font-black text-transparent sm:text-5xl">유쾌한 결과 발표</h1>
+            <p className="text-sm font-semibold text-foreground/65 break-keep">오늘 한 번 시원하게 쏘며 분위기를 살릴 주인공이 정해졌습니다.</p>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
               </div>
               <div className="absolute -right-3 -top-3 sm:-right-8 sm:-top-4 animate-bounce">
                 <Badge className="rotate-12 rounded-xl border-4 border-black bg-[hsl(var(--highlight))] px-3 py-1.5 text-xs font-black text-black shadow-xl sm:px-4 sm:py-2 sm:text-sm">
-                  {bosses.length > 1 ? "공동 보스" : "런치 보스"}
+                  {bosses.length > 1 ? "공동 스폰서" : "오늘의 스폰서"}
                 </Badge>
               </div>
             </div>
@@ -136,7 +136,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
                 {bosses.length > 1 ? bosses.map((b) => b.participant.name).join(", ") : winner.name}
               </div>
               <div className="inline-flex max-w-full rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary break-keep">
-                {bosses.length > 1 ? "공동 주인공 탄생" : winner.character}
+                {bosses.length > 1 ? "기분 좋게 공동 당첨" : winner.character}
               </div>
             </div>
 
@@ -144,7 +144,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
               <div className="flex w-full flex-col items-center gap-1 rounded-3xl border border-accent/20 bg-[linear-gradient(135deg,rgba(255,96,74,0.08),rgba(0,209,178,0.14))] p-3">
                 <div className="flex items-center gap-2 text-xs font-black text-accent">
                   <Wallet size={16} />
-                  <span>최종 결제 금액</span>
+                  <span>오늘 시원하게 나간 금액</span>
                 </div>
                 <div className="text-2xl font-black text-accent">{winningAmount}원</div>
               </div>
@@ -167,7 +167,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
           <div className="space-y-3 text-left">
             <div className="flex items-center gap-2 px-2 font-black text-primary">
               <ListChecks size={20} />
-              <h3>전체 참가자 결과</h3>
+              <h3>이번 판 전체 결과</h3>
             </div>
             <ScrollArea className="max-h-[360px] rounded-[2.5rem] border border-white/80 bg-white/60 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)] backdrop-blur-md sm:max-h-[400px]">
               <div className="space-y-2 pr-2">
@@ -189,7 +189,7 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
                       </div>
                       <div className="ml-3 shrink-0 text-right">
                         <div className={"text-sm font-black " + (isBoss ? "text-accent" : "text-primary")}>{res.amount}원</div>
-                        {isBoss && <Badge className="h-4 border-none bg-accent text-[9px] font-bold">선정</Badge>}
+                        {isBoss && <Badge className="h-4 border-none bg-accent text-[9px] font-bold">당첨</Badge>}
                       </div>
                     </div>
                   );
@@ -202,10 +202,10 @@ export const ResultScreen = ({ onBack, onHome }: { onBack: () => void; onHome: (
         <div className="grid gap-3">
           <Button className="hero-gradient soft-glow h-16 gap-2 rounded-[1.7rem] text-lg font-bold shadow-[0_20px_50px_rgba(255,96,74,0.28)]" onClick={resetGame}>
             <RefreshCw size={24} />
-            같은 인원으로 다시 하기
+            같은 멤버로 한 판 더
           </Button>
           <div className="rounded-[1.4rem] border border-white/80 bg-white/65 px-5 py-4 text-left text-sm leading-6 text-foreground/68 backdrop-blur-xl break-keep">
-            참가자 구성을 유지한 채 바로 다음 판으로 넘어갈 수 있습니다. 인원을 바꾸려면 아래에서 처음 화면으로 돌아가세요.
+            지금 멤버 그대로 바로 다시 돌릴 수 있습니다. 이번엔 누가 웃으면서 카드 꺼낼지 한 판 더 보세요.
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { GameProvider, useGame } from '@/components/game-context';
 import { ParticipantSetup } from '@/components/participant-setup';
 import { FloatingIcons } from '@/components/game-icons';
@@ -8,15 +8,55 @@ import { LadderGame } from '@/components/game/ladder-game';
 import { RouletteGame } from '@/components/game/roulette-game';
 import { TapSurvival } from '@/components/game/tap-game';
 import { ResultScreen } from '@/components/result-screen';
+import { CoffeeRecommendationFlow, MenuRecommendationFlow } from '@/components/recommendation-flows';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, ChevronRight, Clock3, CircleDot, Home as HomeIcon, ShieldCheck, Sparkles, Target, Trophy, UtensilsCrossed } from 'lucide-react';
+import {
+  ArrowLeft,
+  ChevronRight,
+  CircleDot,
+  Clock3,
+  Coffee,
+  Home as HomeIcon,
+  ShieldCheck,
+  Sparkles,
+  Soup,
+  Trophy,
+  UtensilsCrossed,
+} from 'lucide-react';
 
 const HIGHLIGHTS = [
-  { title: '빠른 결정', description: '회의 끝나고 바로 시작해도 1분 안에 세팅이 끝납니다.', icon: Clock3 },
-  { title: '어색하지 않은 텐션', description: '과하지 않은 게임성으로 점심 전 분위기만 가볍게 띄웁니다.', icon: Sparkles },
-  { title: '공정한 룰', description: '사다리, 룰렛, 셔플 중 상황에 맞는 방식으로 부담 없이 정합니다.', icon: ShieldCheck },
+  { title: '빠른 결정', description: '결제든 메뉴든 커피든, 고민 길어지기 전에 기분 좋게 결론을 냅니다.', icon: Clock3 },
+  { title: '재미있는 압축 과정', description: '결정 과정도 심심하지 않게, 후보가 줄어드는 재미를 살렸습니다.', icon: Sparkles },
+  { title: '상황 맞춤 선택', description: '지금 필요한 흐름만 골라 바로 들어가면 됩니다.', icon: ShieldCheck },
 ];
+
+const EXPERIENCE_OPTIONS = [
+  {
+    mode: 'payment',
+    emoji: '🎲',
+    title: '점심 결제 게임',
+    subtitle: '인원 설정 후 사다리, 룰렛, 셔플 중 선택',
+    summary: '누가 조금 더 낼지 정해야 할 때, 괜히 무겁지 않게 웃으면서 결과를 받아들이게 만드는 모드입니다.',
+    meta: ['인원 필요', '게임형', '기존 흐름'],
+  },
+  {
+    mode: 'menu',
+    emoji: '🍱',
+    title: '오늘 메뉴 고르기',
+    subtitle: '노멀 중심의 메뉴 압축 추천',
+    summary: '무난하게 먹고 싶은 날도, 조금 색다르게 가고 싶은 날도 취향만 고르면 오늘 메뉴를 빠르게 정리합니다.',
+    meta: ['노멀 기본값', '제외 조건', '시각적 압축'],
+  },
+  {
+    mode: 'coffee',
+    emoji: '☕',
+    title: '오늘 커피 고르기',
+    subtitle: '프랜차이즈와 지역 카페를 섞는 복불복 추천',
+    summary: '기본 프랜차이즈와 단골 지역 카페를 함께 돌려 식사 후 발걸음이 가벼워지는 한 곳을 정합니다.',
+    meta: ['카페 편집', '지역 카페 추가', '복불복'],
+  },
+] as const;
 
 const GAME_OPTIONS = [
   {
@@ -46,14 +86,17 @@ const GAME_OPTIONS = [
 ] as const;
 
 const STEPS = [
-  { label: '1. 인원 선택', description: '현재 식사 인원만 빠르게 고릅니다.' },
-  { label: '2. 이름 확인', description: '자동 배정된 이름을 그대로 쓰거나 바로 수정합니다.' },
-  { label: '3. 게임 시작', description: '상황에 맞는 방식으로 결제 담당을 정합니다.' },
+  { label: '1. 흐름 선택', description: '오늘은 누가 쏠지, 뭘 먹을지, 어디 갈지부터 빠르게 고릅니다.' },
+  { label: '2. 조건 정리', description: '인원이나 취향만 짧게 정리하고 바로 결과 쪽으로 넘어갑니다.' },
+  { label: '3. 결과 확정', description: '후보가 줄어드는 재미를 보고 마지막 선택을 기분 좋게 받습니다.' },
 ] as const;
+
+type ExperienceMode = 'payment' | 'menu' | 'coffee' | null;
+type ViewMode = 'intro' | 'setup' | 'game' | 'recommendation';
 
 const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => void }) => {
   return (
-    <div className="fixed bottom-4 right-4 z-40 flex flex-col gap-2 sm:bottom-6 sm:right-6">
+    <div className="fixed inset-x-4 bottom-4 z-40 grid grid-cols-2 gap-2 sm:inset-x-auto sm:right-6 sm:flex sm:w-auto sm:flex-col sm:bottom-6">
       <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
         <ArrowLeft size={16} className="mr-2" /> 이전
       </Button>
@@ -65,7 +108,8 @@ const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => voi
 };
 
 const MainScreen = () => {
-  const [view, setView] = useState<'intro' | 'setup' | 'game'>('intro');
+  const [view, setView] = useState<ViewMode>('intro');
+  const [experienceMode, setExperienceMode] = useState<ExperienceMode>(null);
   const { gameMode, setGameMode, winner, participants, fullReset } = useGame();
   const [mounted, setMounted] = useState(false);
 
@@ -74,18 +118,28 @@ const MainScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (mounted && view === 'game' && participants.length === 0) {
+    if (mounted && view === 'game' && experienceMode === 'payment' && participants.length === 0) {
       setView('setup');
     }
-  }, [participants.length, view, mounted]);
+  }, [participants.length, view, mounted, experienceMode]);
 
   const handleGameSelect = (mode: 'ladder' | 'roulette' | 'tap') => {
     setGameMode(mode);
     setView('game');
   };
 
+  const handleExperienceEnter = (mode: ExperienceMode) => {
+    setExperienceMode(mode);
+    if (mode === 'payment') {
+      setView('setup');
+      return;
+    }
+    setView('recommendation');
+  };
+
   const handleGoHome = () => {
     fullReset();
+    setExperienceMode(null);
     setView('intro');
   };
 
@@ -93,53 +147,53 @@ const MainScreen = () => {
 
   if (view === 'intro') {
     return (
-      <div className="relative min-h-[100svh] overflow-hidden px-5 py-8 sm:px-8 lg:px-12">
+      <div className="relative min-h-[100svh] overflow-hidden px-4 py-5 sm:px-8 sm:py-8 lg:px-12">
         <FloatingIcons />
         <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.88),_transparent_72%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,_rgba(255,93,88,0.12),_transparent_28%),radial-gradient(circle_at_90%_16%,_rgba(0,209,178,0.12),_transparent_24%),radial-gradient(circle_at_50%_100%,_rgba(255,196,61,0.1),_transparent_26%)]" />
-        <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-center gap-8 lg:gap-10">
-          <div className="flex items-center justify-between rounded-full border border-white/70 bg-white/70 px-4 py-3 backdrop-blur-xl shadow-[0_12px_30px_rgba(16,24,40,0.08)]">
+        <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-center gap-5 sm:gap-8 lg:gap-10">
+          <div className="flex items-center justify-between rounded-[1.5rem] border border-white/70 bg-white/70 px-3 py-3 backdrop-blur-xl shadow-[0_12px_30px_rgba(16,24,40,0.08)] sm:rounded-full sm:px-4">
             <div className="flex min-w-0 items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <UtensilsCrossed size={20} />
               </div>
               <div className="min-w-0">
                 <div className="font-headline text-sm font-bold uppercase tracking-[0.24em] text-primary">Lunch Boss</div>
-                <div className="text-xs text-muted-foreground break-keep">점심 결제 담당을 가장 가볍게 정하는 방법</div>
+                <div className="text-xs text-muted-foreground break-keep">점심값도 메뉴도 커피도 기분 좋게 정리하는 방법</div>
               </div>
             </div>
             <div className="hidden items-center gap-2 rounded-full bg-foreground/[0.04] px-3 py-1.5 text-xs font-semibold text-foreground/70 sm:flex">
               <CircleDot size={14} className="text-secondary" />
-              TPO에 맞는 라이트 게임
+              점심 타임 결정을 한 번에
             </div>
           </div>
 
-          <div className="grid items-stretch gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-            <section className="rounded-[2rem] border border-white/70 bg-white/82 p-6 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl lg:p-10">
+          <div className="grid items-stretch gap-4 sm:gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <section className="rounded-[1.75rem] border border-white/70 bg-white/82 p-4 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl sm:rounded-[2rem] sm:p-6 lg:p-10">
               <div className="mb-8 flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/12 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
                   <Sparkles size={14} />
-                  점심 결제 게임
+                  Lunch Mood Hub
                 </div>
               </div>
 
               <div className="space-y-5">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-semibold text-foreground/70">
                   <Trophy size={14} className="text-accent" />
-                  오늘 점심 분위기를 정리하는 가장 빠른 흐름
+                  점심시간 고민을 짧고 유쾌하게 끝내는 흐름
                 </div>
                 <div>
-                  <h1 className="font-headline text-3xl font-extrabold leading-[1.02] tracking-[-0.05em] text-foreground break-keep whitespace-normal sm:text-4xl md:text-6xl lg:text-7xl">
-                    빠르게 고르고
+                  <h1 className="font-headline text-[2rem] font-extrabold leading-[1.02] tracking-[-0.05em] text-foreground break-keep whitespace-normal sm:text-4xl md:text-6xl lg:text-7xl">
+                    한 번 웃고
                     <br />
-                    확실하게 정하는
+                    메뉴 고르고
                     <br />
-                    점심 결제 게임
+                    커피까지 정하는
                   </h1>
                   <div className="mt-5 max-w-2xl space-y-2 break-keep text-base leading-7 text-muted-foreground sm:text-lg">
-                    <p>회의 직후: 설명 길게 할 필요 없이, 인원만 고르면 바로 시작합니다.</p>
-                    <p>외근 전: 사다리, 룰렛, 셔플 중 하나만 고르고 빠르게 결제 담당을 정합니다.</p>
-                    <p>팀 점심 직전: 분위기는 살리고 부담은 줄이는 톤으로, 어색하지 않게 결과만 또렷하게 보여줍니다.</p>
+                    <p>회의 직후: 인원만 넣으면 오늘 한 번 크게 낼 주인공이 유쾌하게 정해집니다.</p>
+                    <p>메뉴 고민 중: 취향만 고르면 괜히 빙빙 돌지 않고 오늘 점심이 빠르게 좁혀집니다.</p>
+                    <p>식사 후: 프랜차이즈와 동네 카페를 함께 돌려 오늘 가볍게 들를 한 곳을 정합니다.</p>
                   </div>
                 </div>
               </div>
@@ -156,17 +210,20 @@ const MainScreen = () => {
                 ))}
               </div>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:gap-3 lg:flex-row lg:flex-wrap">
                 <Button
-                  className="hero-gradient soft-glow group h-14 rounded-full px-7 text-base font-bold"
-                  onClick={() => setView('setup')}
+                  className="hero-gradient soft-glow group h-13 rounded-full px-5 text-sm font-bold sm:h-14 sm:px-7 sm:text-base"
+                  onClick={() => handleExperienceEnter('payment')}
                 >
-                  인원 설정 시작
+                  오늘 한 번 크게 쏘기
                   <ChevronRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
                 </Button>
-                <div className="flex items-center rounded-full border border-border/70 bg-background/70 px-5 py-3 text-sm text-muted-foreground">
-                  평균 준비 시간 30초 내외. 이름은 자동으로 채워집니다.
-                </div>
+                <Button className="h-13 rounded-full bg-white px-5 text-sm font-bold text-foreground shadow-[0_16px_40px_rgba(16,24,40,0.08)] hover:bg-white sm:h-14 sm:px-7 sm:text-base" onClick={() => handleExperienceEnter('menu')}>
+                  <Soup size={18} className="mr-2 text-primary" /> 오늘 메뉴 고르기
+                </Button>
+                <Button className="h-13 rounded-full bg-white px-5 text-sm font-bold text-foreground shadow-[0_16px_40px_rgba(16,24,40,0.08)] hover:bg-white sm:h-14 sm:px-7 sm:text-base" onClick={() => handleExperienceEnter('coffee')}>
+                  <Coffee size={18} className="mr-2 text-secondary" /> 오늘 커피 고르기
+                </Button>
               </div>
             </section>
 
@@ -191,30 +248,30 @@ const MainScreen = () => {
               <div className="rounded-[2rem] border border-white/70 bg-white/78 p-6 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">추천 방식</div>
-                    <h2 className="mt-2 font-headline text-2xl font-bold text-foreground">상황별 게임 선택</h2>
+                    <div className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">오늘의 선택</div>
+                    <h2 className="mt-2 font-headline text-2xl font-bold text-foreground">지금 필요한 흐름 고르기</h2>
                   </div>
-                  <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">3가지 방식</div>
+                  <div className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">3가지 모드</div>
                 </div>
                 <div className="mt-4 space-y-3">
-                  {GAME_OPTIONS.map((game) => (
-                    <div key={game.mode} className="rounded-[1.4rem] border border-border/60 bg-background/70 p-4">
+                  {EXPERIENCE_OPTIONS.map((item) => (
+                    <div key={item.mode} className="rounded-[1.4rem] border border-border/60 bg-background/70 p-4">
                       <div className="flex items-start gap-4">
                         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,96,74,0.12),rgba(255,196,61,0.18))] text-2xl shadow-sm">
-                          <span>{game.emoji}</span>
+                          <span>{item.emoji}</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <div className="font-headline text-lg font-bold text-foreground">{game.title}</div>
+                            <div className="font-headline text-lg font-bold text-foreground">{item.title}</div>
                             <div className="rounded-full bg-foreground/[0.05] px-2.5 py-1 text-[11px] font-semibold text-foreground/60">
-                              {game.subtitle}
+                              {item.subtitle}
                             </div>
                           </div>
-                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{game.summary}</p>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.summary}</p>
                           <div className="mt-3 flex flex-wrap gap-2">
-                            {game.meta.map((item) => (
-                              <span key={item} className="rounded-full border border-border/70 px-2.5 py-1 text-[11px] font-semibold text-foreground/65">
-                                {item}
+                            {item.meta.map((meta) => (
+                              <span key={meta} className="rounded-full border border-border/70 px-2.5 py-1 text-[11px] font-semibold text-foreground/65">
+                                {meta}
                               </span>
                             ))}
                           </div>
@@ -235,6 +292,16 @@ const MainScreen = () => {
     return (
       <div className="relative z-30 min-h-[100svh] bg-background">
         <ParticipantSetup onNext={() => { setGameMode(null); setView('game'); }} onBack={() => setView('intro')} />
+      </div>
+    );
+  }
+
+  if (view === 'recommendation') {
+    return (
+      <div className="relative z-30 min-h-[100svh] bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
+        {experienceMode === 'menu' && <MenuRecommendationFlow />}
+        {experienceMode === 'coffee' && <CoffeeRecommendationFlow />}
+        <FloatingNav onBack={() => setView('intro')} onHome={handleGoHome} />
       </div>
     );
   }
@@ -314,7 +381,6 @@ const MainScreen = () => {
     </div>
   );
 };
-
 
 export default function Home() {
   return (
