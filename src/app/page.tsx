@@ -99,15 +99,17 @@ const FloatingNav = ({
   onHome,
   className,
 }: {
-  onBack: () => void;
+  onBack?: () => void;
   onHome: () => void;
   className?: string;
 }) => {
   return (
     <div className={['fixed right-4 z-40 flex flex-col gap-2 sm:right-6', className ?? 'bottom-4 sm:bottom-6'].join(' ')}>
-      <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
-        <ArrowLeft size={16} className="mr-2" /> 이전
-      </Button>
+      {onBack ? (
+        <Button variant="outline" className="h-12 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl" onClick={onBack}>
+          <ArrowLeft size={16} className="mr-2" /> 이전
+        </Button>
+      ) : null}
       <Button className="h-12 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.16)] backdrop-blur-xl hover:bg-white" onClick={onHome}>
         <HomeIcon size={16} className="mr-2" /> 메인
       </Button>
@@ -304,7 +306,7 @@ const MainScreen = () => {
           {experienceMode === 'menu' && <MenuRecommendationFlow />}
           {experienceMode === 'coffee' && <CoffeeRecommendationFlow />}
         </div>
-        <FloatingNav onBack={() => setView('intro')} onHome={handleGoHome} className="bottom-[5.25rem] sm:bottom-6" />
+        <FloatingNav onHome={handleGoHome} className="bottom-[5.25rem] sm:bottom-6" />
       </div>
     );
   }

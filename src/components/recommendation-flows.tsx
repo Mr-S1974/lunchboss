@@ -305,7 +305,7 @@ const MobileActionBar = ({
       <Button className="hero-gradient h-12 rounded-full text-sm font-bold" onClick={onPrimary} disabled={primaryDisabled}>
         {primaryLabel}
       </Button>
-      <Button variant="outline" className="h-12 rounded-full border-border/70 bg-white text-foreground hover:bg-white px-4 font-semibold" onClick={onSecondary}>
+      <Button variant="outline" className="h-12 rounded-full border-foreground/10 bg-foreground/[0.06] px-4 font-semibold text-foreground/80 hover:bg-foreground/[0.1]" onClick={onSecondary}>
         {secondaryLabel}
       </Button>
     </div>
@@ -495,7 +495,7 @@ export const MenuRecommendationFlow = () => {
               <Button className="hero-gradient soft-glow h-14 rounded-full px-6 text-base font-bold" onClick={startRecommendation}>
                 <Shuffle size={18} className="mr-2" /> 메뉴 추천 시작
               </Button>
-              <Button variant="outline" className="h-14 rounded-full border-border/70 bg-white text-foreground hover:bg-white sm:px-6 font-semibold" onClick={reset}>
+              <Button variant="outline" className="h-14 rounded-full border-foreground/10 bg-foreground/[0.06] font-semibold text-foreground/80 hover:bg-foreground/[0.1] sm:px-6" onClick={reset}>
                 <RotateCcw size={18} className="mr-2" /> 초기화
               </Button>
             </div>
@@ -741,7 +741,7 @@ export const CoffeeRecommendationFlow = () => {
                   <div className="text-sm font-semibold uppercase tracking-[0.24em] text-secondary">1. 기본 프랜차이즈 정리</div>
                   <h3 className="mt-2 font-headline text-2xl font-bold text-foreground">내 주변에 없는 곳은 제외</h3>
                 </div>
-                <Button variant="outline" className="rounded-full border-border/70 bg-white text-foreground hover:bg-white" onClick={restoreDefaults}>
+                <Button variant="outline" className="rounded-full border-foreground/10 bg-foreground/[0.06] text-foreground/80 hover:bg-foreground/[0.1]" onClick={restoreDefaults}>
                   <RotateCcw size={16} className="mr-2" /> 기본 목록 복원
                 </Button>
               </div>
@@ -887,7 +887,7 @@ export const CoffeeRecommendationFlow = () => {
                 >
                   <Coffee size={18} className="mr-2" /> 카페 추천 시작
                 </Button>
-                <Button variant="outline" className="h-14 rounded-full border-border/70 bg-white text-foreground hover:bg-white sm:px-6 font-semibold" onClick={reset}>
+                <Button variant="outline" className="h-14 rounded-full border-foreground/10 bg-foreground/[0.06] font-semibold text-foreground/80 hover:bg-foreground/[0.1] sm:px-6" onClick={reset}>
                   <RotateCcw size={18} className="mr-2" /> 초기화
                 </Button>
               </div>
