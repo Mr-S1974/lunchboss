@@ -107,6 +107,19 @@ const FloatingNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => voi
   );
 };
 
+const InlineNav = ({ onBack, onHome }: { onBack: () => void; onHome: () => void }) => {
+  return (
+    <div className="mb-4 flex gap-2 sm:mb-6 sm:justify-end">
+      <Button variant="outline" className="h-11 flex-1 rounded-full border-white/80 bg-white/90 px-4 font-semibold shadow-[0_18px_40px_rgba(16,24,40,0.10)] backdrop-blur-xl sm:h-12 sm:flex-none" onClick={onBack}>
+        <ArrowLeft size={16} className="mr-2" /> 이전
+      </Button>
+      <Button className="h-11 flex-1 rounded-full bg-white/90 px-4 font-semibold text-foreground shadow-[0_18px_40px_rgba(16,24,40,0.10)] backdrop-blur-xl hover:bg-white sm:h-12 sm:flex-none" onClick={onHome}>
+        <HomeIcon size={16} className="mr-2" /> 메인
+      </Button>
+    </div>
+  );
+};
+
 const MainScreen = () => {
   const [view, setView] = useState<ViewMode>('intro');
   const [experienceMode, setExperienceMode] = useState<ExperienceMode>(null);
@@ -210,20 +223,8 @@ const MainScreen = () => {
                 ))}
               </div>
 
-              <div className="mt-6 flex flex-col gap-2.5 sm:mt-8 sm:gap-3 lg:flex-row lg:flex-wrap">
-                <Button
-                  className="hero-gradient soft-glow group h-13 rounded-full px-5 text-sm font-bold sm:h-14 sm:px-7 sm:text-base"
-                  onClick={() => handleExperienceEnter('payment')}
-                >
-                  오늘 한 번 크게 쏘기
-                  <ChevronRight size={18} className="ml-1 transition-transform group-hover:translate-x-1" />
-                </Button>
-                <Button className="h-13 rounded-full bg-white px-5 text-sm font-bold text-foreground shadow-[0_16px_40px_rgba(16,24,40,0.08)] hover:bg-white sm:h-14 sm:px-7 sm:text-base" onClick={() => handleExperienceEnter('menu')}>
-                  <Soup size={18} className="mr-2 text-primary" /> 오늘 메뉴 고르기
-                </Button>
-                <Button className="h-13 rounded-full bg-white px-5 text-sm font-bold text-foreground shadow-[0_16px_40px_rgba(16,24,40,0.08)] hover:bg-white sm:h-14 sm:px-7 sm:text-base" onClick={() => handleExperienceEnter('coffee')}>
-                  <Coffee size={18} className="mr-2 text-secondary" /> 오늘 커피 고르기
-                </Button>
+              <div className="mt-6 rounded-[1.4rem] border border-border/70 bg-background/78 px-4 py-4 text-sm leading-6 text-muted-foreground sm:mt-8">
+                오늘 필요한 흐름은 오른쪽 카드에서 바로 시작할 수 있습니다. 설명을 보고 지금 가장 맞는 버튼을 눌러 들어가면 됩니다.
               </div>
             </section>
 
@@ -275,6 +276,11 @@ const MainScreen = () => {
                               </span>
                             ))}
                           </div>
+                          <Button className="mt-4 h-11 w-full rounded-full text-sm font-bold sm:w-auto sm:px-5" onClick={() => handleExperienceEnter(item.mode)}>
+                            {item.mode === 'payment' && '오늘 한 번 크게 쏘기'}
+                            {item.mode === 'menu' && '오늘 메뉴 고르기'}
+                            {item.mode === 'coffee' && '오늘 커피 고르기'}
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -298,10 +304,12 @@ const MainScreen = () => {
 
   if (view === 'recommendation') {
     return (
-      <div className="relative z-30 min-h-[100svh] bg-background px-4 py-6 pb-32 sm:px-8 sm:py-8 sm:pb-36 lg:px-12">
-        {experienceMode === 'menu' && <MenuRecommendationFlow />}
-        {experienceMode === 'coffee' && <CoffeeRecommendationFlow />}
-        <FloatingNav onBack={() => setView('intro')} onHome={handleGoHome} />
+      <div className="relative z-30 min-h-[100svh] bg-background px-4 py-6 pb-10 sm:px-8 sm:py-8 lg:px-12">
+        <div className="mx-auto w-full max-w-6xl">
+          <InlineNav onBack={() => setView('intro')} onHome={handleGoHome} />
+          {experienceMode === 'menu' && <MenuRecommendationFlow />}
+          {experienceMode === 'coffee' && <CoffeeRecommendationFlow />}
+        </div>
       </div>
     );
   }
