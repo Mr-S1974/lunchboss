@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+Sitemap: https://lunchboss.pages.dev/sitemap.xml
