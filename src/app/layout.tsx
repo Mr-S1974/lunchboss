@@ -1,18 +1,52 @@
-import type {Metadata} from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 const siteUrl = 'https://lunchboss.pages.dev/';
 const siteTitle = 'Lunch Boss | 즐거운 점심 결제 한판';
-const siteDescription = '사다리, 룰렛, 셔플로 점심 결제 담당을 빠르게 정하는 Lunch Boss.';
+const siteDescription = '사다리, 룰렛, 셔플로 점심 결제 담당을 빠르게 정하는 Lunch Boss. 팀 점심 결제, 메뉴 추천, 커피 내기까지 한 번에 해결하세요.';
+
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: siteTitle,
+  title: {
+    default: siteTitle,
+    template: `%s | Lunch Boss`,
+  },
   description: siteDescription,
+  keywords: ['점심 결제', '사다리타기', '룰렛', '점심 메뉴 추천', '커피 내기', '팀 점심', '점심값 계산', '복불복'],
+  authors: [{ name: 'Lunch Boss Team' }],
+  creator: 'Lunch Boss',
+  publisher: 'Lunch Boss',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     type: 'website',
     title: siteTitle,
     description: siteDescription,
+    url: siteUrl,
     siteName: 'Lunch Boss',
     locale: 'ko_KR',
     images: [
@@ -64,8 +98,24 @@ export default function RootLayout({
             `,
           }}
         />
-        <link rel="canonical" href={siteUrl} />
-        <meta property="og:url" content={siteUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Lunch Boss",
+              "url": siteUrl,
+              "description": siteDescription,
+              "applicationCategory": "UtilitiesApplication",
+              "operatingSystem": "All",
+              "offers": {
+                "@type": "Offer",
+                "price": "0"
+              }
+            }),
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
