@@ -74,6 +74,10 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <meta
+          name="naver-site-verification"
+          content="0a3f1af7c35373bfdf1cfd5751d451dc3720e2ce"
+        />
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4269966166949156" crossOrigin="anonymous"></script>
         <meta name="google-adsense-account" content="ca-pub-4269966166949156" />
         <script
