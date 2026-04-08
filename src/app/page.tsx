@@ -156,8 +156,51 @@ const MainScreen = () => {
   if (!mounted) return null;
 
   if (view === 'intro') {
+    const faqStructuredData = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Lunch Boss(런치 보스)는 어떤 서비스인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "사다리 타기, 룰렛, 지목 셔플 등 다양한 미니 게임을 통해 직장인들의 점심 메뉴 선정, 커피 내기, 점심값 결제 담당을 빠르고 재미있게 정해주는 무료 웹 서비스입니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "점심 결제 게임에는 어떤 종류가 있나요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "안정적인 '사다리 타기', 긴장감 넘치는 '복불복 룰렛', 빠르고 직관적인 '지목 셔플(터치 서바이벌)'의 세 가지 모드를 제공하여 상황과 인원에 맞게 선택할 수 있습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "메뉴나 커피 추천도 가능한가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "네, 취향이나 제외하고 싶은 조건만 간단히 선택하면 결정장애 없이 오늘 먹을 점심 메뉴와 식후에 방문할 카페를 빠르게 추천해 드립니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "별도의 앱 설치나 회원가입이 필요한가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "아니요, 앱 설치나 회원가입 절차 없이 웹 브라우저에서 바로 접속하여 무료로 모든 기능을 이용할 수 있습니다. 모바일과 PC 환경 모두 최적화되어 있습니다."
+          }
+        }
+      ]
+    };
+
     return (
       <div className="relative min-h-[100svh] overflow-hidden px-4 py-5 sm:px-8 sm:py-8 lg:px-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+        />
         <FloatingIcons />
         <div className="absolute inset-x-0 top-0 h-56 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.88),_transparent_72%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,_rgba(255,93,88,0.12),_transparent_28%),radial-gradient(circle_at_90%_16%,_rgba(0,209,178,0.12),_transparent_24%),radial-gradient(circle_at_50%_100%,_rgba(255,196,61,0.1),_transparent_26%)]" />
@@ -260,7 +303,7 @@ const MainScreen = () => {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <div className="font-headline text-lg font-bold text-foreground">{item.title}</div>
+                            <h3 className="font-headline text-lg font-bold text-foreground">{item.title}</h3>
                             <div className="rounded-full bg-foreground/[0.05] px-2.5 py-1 text-[11px] font-semibold text-foreground/60">
                               {item.subtitle}
                             </div>
@@ -286,6 +329,31 @@ const MainScreen = () => {
               </div>
             </section>
           </div>
+
+          <section className="mt-4 rounded-[2rem] border border-white/70 bg-white/82 p-6 shadow-[0_24px_80px_rgba(16,24,40,0.10)] backdrop-blur-xl sm:p-10">
+            <div className="mb-6">
+              <h2 className="font-headline text-2xl font-bold text-foreground">자주 묻는 질문 (FAQ)</h2>
+              <p className="mt-2 text-sm text-muted-foreground">Lunch Boss(런치 보스) 사용에 대해 궁금하신 점을 확인해보세요.</p>
+            </div>
+            <div className="space-y-6">
+              <article>
+                <h3 className="text-lg font-bold text-foreground">Lunch Boss(런치 보스)는 어떤 서비스인가요?</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">사다리 타기, 룰렛, 지목 셔플 등 다양한 미니 게임을 통해 직장인들의 점심 메뉴 선정, 커피 내기, 점심값 결제 담당을 빠르고 재미있게 정해주는 무료 웹 서비스입니다.</p>
+              </article>
+              <article>
+                <h3 className="text-lg font-bold text-foreground">점심 결제 게임에는 어떤 종류가 있나요?</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">안정적인 '사다리 타기', 긴장감 넘치는 '복불복 룰렛', 빠르고 직관적인 '지목 셔플(터치 서바이벌)'의 세 가지 모드를 제공하여 상황과 인원에 맞게 선택할 수 있습니다.</p>
+              </article>
+              <article>
+                <h3 className="text-lg font-bold text-foreground">메뉴나 커피 추천도 가능한가요?</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">네, 취향이나 제외하고 싶은 조건만 간단히 선택하면 결정장애 없이 오늘 먹을 점심 메뉴와 식후에 방문할 카페를 빠르게 추천해 드립니다.</p>
+              </article>
+              <article>
+                <h3 className="text-lg font-bold text-foreground">별도의 앱 설치나 회원가입이 필요한가요?</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">아니요, 앱 설치나 회원가입 절차 없이 웹 브라우저에서 바로 접속하여 무료로 모든 기능을 이용할 수 있습니다. 모바일과 PC 환경 모두 최적화되어 있습니다.</p>
+              </article>
+            </div>
+          </section>
         </div>
       </div>
     );
@@ -351,7 +419,7 @@ const MainScreen = () => {
                     <div className="inline-flex max-w-full rounded-full bg-foreground/[0.05] px-3 py-1 text-[11px] font-semibold text-foreground/60 break-keep whitespace-normal">
                       {game.subtitle}
                     </div>
-                    <div className="mt-3 font-headline text-xl font-bold text-foreground break-keep sm:text-2xl">{game.title}</div>
+                    <h3 className="mt-3 font-headline text-xl font-bold text-foreground break-keep sm:text-2xl">{game.title}</h3>
                     <p className="mt-2 break-keep whitespace-normal text-sm leading-6 text-muted-foreground">{game.summary}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
